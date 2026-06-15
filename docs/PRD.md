@@ -87,7 +87,7 @@ Nenhum outro comando é necessário. Consultas e análises são feitas exclusiva
 - A planilha é a **fonte de verdade** do sistema
 - Registros cancelados recebem status `cancelado` — nunca são deletados fisicamente
 - A coluna **categoria** fica vazia na Versão 1.0 e será preenchida futuramente
-- O painel web lê diretamente via API do Google Sheets
+- O painel web **nunca acessa o Google Sheets diretamente** — lê os dados via API FastAPI local, que é o único módulo que faz a leitura da planilha
 
 ---
 
@@ -132,8 +132,9 @@ O servidor local precisa manter dois processos rodando:
 
 | Processo | Função |
 |---|---|
-| **Bot Telegram** | Fica escutando mensagens e grava no Google Sheets |
-| **Servidor do painel web** | Serve o frontend e lê o Google Sheets |
+| **Bot Telegram** (`bot/`)| Fica escutando mensagens e grava no Google Sheets |
+| **API FastAPI** (`api/`) | Lê o Google Sheets e serve os dados ao frontend via REST |
+| **Frontend React** (`frontend/`) | Interface web, consome exclusivamente a API FastAPI |
 
 **Implicação importante:** o computador precisa estar **ligado e conectado à internet** para que o bot receba e processe as mensagens. Se o computador estiver desligado, as mensagens enviadas no Telegram ficam pendentes e são processadas quando o servidor voltar.
 
@@ -155,8 +156,10 @@ O servidor local precisa manter dois processos rodando:
 
 ## 8. Critérios de Sucesso da Versão 1.0
 
-- [ ] Enviar uma mensagem no formato definido e o dado aparecer salvo na planilha em menos de 5 segundos
+- [x] Enviar uma mensagem no formato definido e o dado aparecer salvo na planilha em menos de 5 segundos
 - [ ] Acessar o painel e ver o saldo e os gastos do mês atual
 - [ ] Conseguir navegar entre meses e ver o histórico
 - [ ] Editar ou excluir um registro pelo painel
 - [ ] O sistema funcionar de forma estável no dia a dia sem intervenção técnica
+
+> **Progresso:** Fases 1–4 concluídas. Bot e API funcionando. Frontend pendente (Fase 5).
