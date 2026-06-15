@@ -216,3 +216,9 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Finance Bot
+credentials/google-credentials.json
+node_modules/
+dist/
+.DS_Store
