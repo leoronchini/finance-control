@@ -37,7 +37,8 @@ frontend/
 │   ├── pages/
 │   │   ├── Dashboard.jsx
 │   │   ├── Transactions.jsx
-│   │   └── History.jsx
+│   │   ├── History.jsx
+│   │   └── ItemSummary.jsx      ← tela da Fase 7 (resumo por item)
 │   ├── components/
 │   │   ├── SummaryCards.jsx
 │   │   ├── TransactionTable.jsx
@@ -92,13 +93,14 @@ export const deleteTransaction = (id) =>
 
 ### `src/App.jsx`
 
-Roteamento entre as três telas com navegação lateral.
+Roteamento entre as quatro telas com navegação lateral.
 
 ```jsx
 import { BrowserRouter, Routes, Route, NavLink } from 'react-router-dom'
 import Dashboard from './pages/Dashboard'
 import Transactions from './pages/Transactions'
 import History from './pages/History'
+import ItemSummary from './pages/ItemSummary'
 
 export default function App() {
   return (
@@ -110,6 +112,7 @@ export default function App() {
             { to: '/', label: 'Dashboard' },
             { to: '/transactions', label: 'Transações' },
             { to: '/history', label: 'Histórico' },
+            { to: '/items', label: 'Por Item' },
           ].map(({ to, label }) => (
             <NavLink
               key={to}
@@ -132,6 +135,7 @@ export default function App() {
             <Route path="/" element={<Dashboard />} />
             <Route path="/transactions" element={<Transactions />} />
             <Route path="/history" element={<History />} />
+            <Route path="/items" element={<ItemSummary />} />
           </Routes>
         </main>
       </div>
@@ -577,6 +581,134 @@ export default function History() {
 
 ---
 
+### `src/pages/ItemSummary.jsx`
+
+Tela de resumo de gastos por item, originada na Fase 7. Consome o endpoint `GET /summary/items`.
+
+```jsx
+import { useState, useEffect } from 'react'
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts'
+
+const API_BASE = 'http://localhost:8000'
+const COLORS = ['#6366f1', '#8b5cf6', '#a78bfa', '#c4b5fd', '#ddd6fe']
+
+const now = new Date()
+
+export default function ItemSummary() {
+  const [mes, setMes] = useState(String(now.getMonth() + 1).padStart(2, '0'))
+  const [ano, setAno] = useState(String(now.getFullYear()))
+  const [data, setData] = useState(null)
+  const [view, setView] = useState('tabela') // 'tabela' | 'grafico'
+
+  useEffect(() => {
+    fetch(`${API_BASE}/summary/items?mes=${mes}&ano=${ano}`)
+      .then((r) => r.json())
+      .then(setData)
+      .catch(console.error)
+  }, [mes, ano])
+
+  const meses = [
+    ['01', 'Jan'], ['02', 'Fev'], ['03', 'Mar'], ['04', 'Abr'],
+    ['05', 'Mai'], ['06', 'Jun'], ['07', 'Jul'], ['08', 'Ago'],
+    ['09', 'Set'], ['10', 'Out'], ['11', 'Nov'], ['12', 'Dez'],
+  ]
+
+  return (
+    <div>
+      <h1 style={{ color: '#cdd6f4', marginBottom: 24 }}>Resumo por Item</h1>
+
+      <div style={{ display: 'flex', gap: 12, marginBottom: 24 }}>
+        <select value={mes} onChange={(e) => setMes(e.target.value)} style={selectStyle}>
+          {meses.map(([v, l]) => <option key={v} value={v}>{l}</option>)}
+        </select>
+        <select value={ano} onChange={(e) => setAno(e.target.value)} style={selectStyle}>
+          {['2025', '2026', '2027'].map((a) => <option key={a} value={a}>{a}</option>)}
+        </select>
+      </div>
+
+      {data && (
+        <>
+          <div style={{ ...cardStyle, marginBottom: 24, display: 'inline-block', minWidth: 240 }}>
+            <p style={{ color: '#a6adc8', margin: 0 }}>Total de saídas</p>
+            <p style={{ color: '#f38ba8', fontSize: 28, fontWeight: 700, margin: '8px 0 0' }}>
+              R$ {data.total_saidas.toFixed(2).replace('.', ',')}
+            </p>
+          </div>
+
+          <div style={{ display: 'flex', gap: 8, marginBottom: 24 }}>
+            {['tabela', 'grafico'].map((v) => (
+              <button key={v} onClick={() => setView(v)} style={{
+                ...selectStyle, cursor: 'pointer',
+                background: view === v ? '#313244' : 'transparent',
+                border: `1px solid ${view === v ? '#cba6f7' : '#45475a'}`,
+                color: view === v ? '#cba6f7' : '#a6adc8',
+              }}>
+                {v === 'tabela' ? 'Tabela' : 'Gráfico'}
+              </button>
+            ))}
+          </div>
+
+          {view === 'tabela' && (
+            <div style={cardStyle}>
+              <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                <thead>
+                  <tr style={{ color: '#a6adc8', borderBottom: '1px solid #313244' }}>
+                    {['Descrição', 'Total', 'Qtd.', '% do total'].map((h) => (
+                      <th key={h} style={{ padding: '8px 12px', textAlign: 'left', fontWeight: 500 }}>{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {data.items.map((item) => (
+                    <tr key={item.descricao} style={{ borderBottom: '1px solid #1e1e2e', color: '#cdd6f4' }}>
+                      <td style={{ padding: '10px 12px' }}>{item.descricao}</td>
+                      <td style={{ padding: '10px 12px' }}>R$ {item.total.toFixed(2).replace('.', ',')}</td>
+                      <td style={{ padding: '10px 12px' }}>{item.count}</td>
+                      <td style={{ padding: '10px 12px' }}>{item.percentual}%</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+
+          {view === 'grafico' && (
+            <div style={cardStyle}>
+              <ResponsiveContainer width="100%" height={Math.max(300, data.items.length * 44)}>
+                <BarChart
+                  layout="vertical"
+                  data={data.items}
+                  margin={{ top: 8, right: 32, left: 120, bottom: 8 }}
+                >
+                  <XAxis type="number" stroke="#a6adc8" tickFormatter={(v) => `R$${v}`} />
+                  <YAxis type="category" dataKey="descricao" width={110} stroke="#a6adc8" />
+                  <Tooltip formatter={(v) => [`R$ ${Number(v).toFixed(2).replace('.', ',')}`, 'Total']} />
+                  <Bar dataKey="total" radius={[0, 4, 4, 0]}>
+                    {data.items.map((_, i) => (
+                      <Cell key={i} fill={COLORS[i % COLORS.length]} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          )}
+        </>
+      )}
+    </div>
+  )
+}
+
+const selectStyle = {
+  background: '#313244', color: '#cdd6f4', border: '1px solid #45475a',
+  borderRadius: 6, padding: '6px 12px',
+}
+const cardStyle = { background: '#1e1e2e', borderRadius: 12, padding: 24 }
+```
+
+> Esta página consome o endpoint `GET /summary/items` criado na **Fase 7**. Ao executar a Fase 5 esse endpoint já estará disponível em `http://localhost:8000/summary/items`.
+
+---
+
 ## Ajuste no `vite.config.js`
 
 Adicionar proxy para evitar CORS em desenvolvimento — qualquer chamada a `/api` é redirecionada para o FastAPI:
@@ -626,6 +758,13 @@ export default defineConfig({
 - [ ] Gráfico de barras exibe entradas e saídas por mês
 - [ ] Linha de saldo sobreposta no gráfico
 - [ ] Tabela de resumo mensal exibe os mesmos dados do gráfico
+
+**Por Item** (Fase 7)
+- [ ] `GET /summary/items?mes=06&ano=2026` retorna lista ordenada por valor
+- [ ] Tela exibe card de total de saídas do mês
+- [ ] Alternador tabela/gráfico funciona
+- [ ] Gráfico de barras horizontal exibe as descrições no eixo Y
+- [ ] Apenas transações `saída` e `ativo` entram no cálculo
 
 ### Checklist técnico
 
