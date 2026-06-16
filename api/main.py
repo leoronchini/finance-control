@@ -10,6 +10,7 @@ from routes.transactions import router as transactions_router
 from routes.summary import router as summary_router
 from routes.history import router as history_router
 from routes.summary_items import router as summary_items_router
+from routes.ai_analysis import router as ai_analysis_router
 
 app = FastAPI(title="Finance Bot API")
 
@@ -22,7 +23,7 @@ app.add_middleware(
         "http://127.0.0.1:5173",
         "http://127.0.0.1:5174",
     ],
-    allow_methods=["GET", "PATCH", "DELETE"],
+    allow_methods=["GET", "PATCH", "DELETE", "POST"],
     allow_headers=["Content-Type"],
 )
 
@@ -30,3 +31,4 @@ app.include_router(transactions_router)
 app.include_router(summary_router)
 app.include_router(history_router)
 app.include_router(summary_items_router)
+app.include_router(ai_analysis_router)

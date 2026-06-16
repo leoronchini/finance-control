@@ -17,6 +17,9 @@ export const getHistory = () =>
 export const getItemSummary = (mes, ano) =>
   fetch(`${BASE}/summary/items?mes=${mes}&ano=${ano}`).then(json)
 
+export const getAiAnalysis = (mes, ano) =>
+  fetch(`${BASE}/ai/analysis?mes=${mes}&ano=${ano}`, { method: 'POST' }).then(json)
+
 export const updateTransaction = (id, data) =>
   fetch(`${BASE}/transactions/${id}`, {
     method: 'PATCH',
