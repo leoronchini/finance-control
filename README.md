@@ -19,7 +19,7 @@ Celular (qualquer lugar)              Casa (computador)
 | 3 | Bot Telegram — parser, handlers e gravação na planilha | ✅ Concluída |
 | 4 | API FastAPI — endpoints REST para o frontend | ✅ Concluída |
 | 5 | Frontend React — painel web com dashboard e gráficos | ⏳ Pendente |
-| 6 | Script de inicialização e testes finais ponta a ponta | ⏳ Pendente |
+| 6 | Script de inicialização e testes finais ponta a ponta | ✅ Concluída |
 
 ---
 

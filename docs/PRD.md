@@ -160,6 +160,6 @@ O servidor local precisa manter dois processos rodando:
 - [ ] Acessar o painel e ver o saldo e os gastos do mês atual
 - [ ] Conseguir navegar entre meses e ver o histórico
 - [ ] Editar ou excluir um registro pelo painel
-- [ ] O sistema funcionar de forma estável no dia a dia sem intervenção técnica
+- [x] O sistema funcionar de forma estável no dia a dia sem intervenção técnica
 
-> **Progresso:** Fases 1–4 concluídas. Bot e API funcionando. Frontend pendente (Fase 5).
+> **Progresso:** Fases 1–4 e 6 concluídas. Bot, API e script de inicialização funcionando. Frontend pendente (Fase 5).

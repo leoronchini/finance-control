@@ -24,7 +24,7 @@ Telegram → bot/ → Google Sheets ← api/ ← frontend/
 | 3 — Bot Telegram | ✅ Concluída |
 | 4 — API FastAPI | ✅ Concluída |
 | 5 — Frontend React | ⏳ Pendente |
-| 6 — Script de inicialização e testes finais | ⏳ Pendente |
+| 6 — Script de inicialização e testes finais | ✅ Concluída |
 
 ## Estrutura de arquivos
 
@@ -126,4 +126,4 @@ Toda a documentação fica em `docs/`:
 - `docs/PRD.md` — requisitos de produto
 - `docs/PRD-tecnico.md` — especificação técnica detalhada
 - `docs/fases.md` — visão geral das 6 fases
-- `docs/fase-1-bootstrap.md` até `docs/fase-4-api-fastapi.md` — detalhamento de cada fase concluída
+- `docs/fase-1-bootstrap.md` até `docs/fase-6-inicializacao-e-testes.md` — detalhamento de cada fase
