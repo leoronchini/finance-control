@@ -4,7 +4,7 @@ from typing import Optional
 import sys, os
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from sheets import get_active_transactions, find_row_by_id
+from sheets import get_active_transactions, find_row_by_id, _invalidate_cache
 
 router = APIRouter()
 
@@ -51,6 +51,7 @@ def update_transaction(transaction_id: int, body: TransactionUpdate):
         if field in updates:
             sheet.update_cell(cell.row, col, updates[field])
 
+    _invalidate_cache()
     return {"ok": True, "id": transaction_id}
 
 
@@ -61,4 +62,5 @@ def delete_transaction(transaction_id: int):
         raise HTTPException(status_code=404, detail="Transação não encontrada")
 
     sheet.update_cell(cell.row, 8, "cancelado")
+    _invalidate_cache()
     return {"ok": True, "id": transaction_id}

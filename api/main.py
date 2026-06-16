@@ -15,7 +15,13 @@ app = FastAPI(title="Finance Bot API")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
+    allow_origins=[
+        "http://localhost:5173",
+        "http://localhost:5174",
+        "http://localhost:5175",
+        "http://127.0.0.1:5173",
+        "http://127.0.0.1:5174",
+    ],
     allow_methods=["GET", "PATCH", "DELETE"],
     allow_headers=["Content-Type"],
 )

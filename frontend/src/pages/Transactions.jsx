@@ -8,6 +8,7 @@ import Panel from '../components/Panel'
 import TransactionTable from '../components/TransactionTable'
 import EditModal from '../components/EditModal'
 import PageFooter from '../components/PageFooter'
+import { SkeletonRows } from '../components/Skeleton'
 
 const filterBtn = (active) => ({
   background: active ? '#3b82f611' : 'var(--bg3)',
@@ -20,6 +21,7 @@ export default function Transactions() {
   const { mes, ano } = useMonth()
   const showToast = useToast()
   const [transactions, setTransactions] = useState([])
+  const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState('all')
   const [search, setSearch] = useState('')
   const [editing, setEditing] = useState(null)
@@ -28,7 +30,11 @@ export default function Transactions() {
   const reload = () => setRev(r => r + 1)
 
   useEffect(() => {
-    getTransactions(mes, ano).then(setTransactions).catch(console.error)
+    setLoading(true)
+    getTransactions(mes, ano)
+      .then(setTransactions)
+      .catch(console.error)
+      .finally(() => setLoading(false))
   }, [mes, ano, rev])
 
   const filtered = useMemo(() =>
@@ -85,11 +91,10 @@ export default function Transactions() {
       </div>
 
       <Panel noPad>
-        <TransactionTable
-          transactions={filtered}
-          onEdit={setEditing}
-          onDelete={handleDelete}
-        />
+        {loading
+          ? <SkeletonRows rows={8} />
+          : <TransactionTable transactions={filtered} onEdit={setEditing} onDelete={handleDelete} />
+        }
       </Panel>
 
       {editing && (

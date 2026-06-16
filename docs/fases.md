@@ -56,6 +56,8 @@ Adicionar ao painel uma tela de resumo que agrupa e totaliza os gastos do mês p
 
 ## Fase 8 — Análise de Dados com IA
 
+**Detalhamento:** [`fase-8-analise-ia.md`](fase-8-analise-ia.md)
+
 Adicionar ao painel um módulo de análise inteligente que lê os dados da planilha e usa a API do Gemini para gerar insights sobre os gastos do usuário. A IA receberá as transações do mês selecionado e retornará uma análise em linguagem natural com observações sobre padrões de consumo, categorias com maior gasto, comparativo com meses anteriores e sugestões de economia. O resultado será exibido no painel em uma nova seção ou tela dedicada, acionada por um botão. Nenhum dado novo é gravado na planilha nesta fase — é uma funcionalidade exclusivamente de leitura e análise.
 
 ## Fase 9 — Resumo de Gastos por Grupo
