@@ -7,6 +7,7 @@ const items = [
   { to: '/items',   label: 'Resumo por Item', icon: <IconItems /> },
   { to: '/groups',  label: 'Resumo por Grupo',icon: <IconGlobe /> },
   { to: '/ai',      label: 'Análise IA',      icon: <IconAI /> },
+  { to: '/pdf',     label: 'Importar PDF',    icon: <IconPdf /> },
 ]
 
 export default function Sidebar() {
@@ -60,4 +61,7 @@ function IconGlobe() {
 }
 function IconAI() {
   return <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+}
+function IconPdf() {
+  return <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="13" y2="17"/></svg>
 }

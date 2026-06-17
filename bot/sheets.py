@@ -12,20 +12,26 @@ SCOPES = [
     "https://www.googleapis.com/auth/drive",
 ]
 
+_sheet_cache = None
+
 
 def _get_sheet():
-    credentials_path = os.path.join(_ROOT, os.getenv("GOOGLE_CREDENTIALS_PATH").lstrip("./"))
-    creds = Credentials.from_service_account_file(credentials_path, scopes=SCOPES)
-    client = gspread.authorize(creds)
-    spreadsheet = client.open_by_key(os.getenv("GOOGLE_SHEETS_ID"))
-    return spreadsheet.worksheet("transacoes")
+    global _sheet_cache
+    if _sheet_cache is None:
+        credentials_path = os.path.join(_ROOT, os.getenv("GOOGLE_CREDENTIALS_PATH").lstrip("./"))
+        creds = Credentials.from_service_account_file(credentials_path, scopes=SCOPES)
+        client = gspread.authorize(creds)
+        spreadsheet = client.open_by_key(os.getenv("GOOGLE_SHEETS_ID"))
+        _sheet_cache = spreadsheet.worksheet("transacoes")
+    return _sheet_cache
 
 
 def get_next_id(sheet) -> int:
     values = sheet.col_values(1)  # coluna 'id'
-    if len(values) <= 1:
+    numeric = [v for v in values[1:] if str(v).strip().isdigit()]
+    if not numeric:
         return 1
-    return int(values[-1]) + 1
+    return int(numeric[-1]) + 1
 
 
 def append_transaction(transaction: dict) -> int:

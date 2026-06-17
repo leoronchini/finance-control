@@ -29,3 +29,16 @@ export const updateTransaction = (id, data) =>
 
 export const deleteTransaction = (id) =>
   fetch(`${BASE}/transactions/${id}`, { method: 'DELETE' }).then(json)
+
+export const uploadPdf = (file) => {
+  const form = new FormData()
+  form.append('file', file)
+  return fetch(`${BASE}/pdf/extract`, { method: 'POST', body: form }).then(json)
+}
+
+export const confirmImport = (items) =>
+  fetch(`${BASE}/pdf/confirm`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(items),
+  }).then(json)

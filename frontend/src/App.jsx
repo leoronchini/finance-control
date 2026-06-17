@@ -8,6 +8,7 @@ import History from './pages/History'
 import ItemSummary from './pages/ItemSummary'
 import GroupSummary from './pages/GroupSummary'
 import AIAnalysis from './pages/AIAnalysis'
+import PdfImport from './pages/PdfImport'
 
 export default function App() {
   return (
@@ -24,6 +25,7 @@ export default function App() {
                 <Route path="/items"       element={<ItemSummary />} />
                 <Route path="/groups"      element={<GroupSummary />} />
                 <Route path="/ai"          element={<AIAnalysis />} />
+                <Route path="/pdf"         element={<PdfImport />} />
               </Routes>
             </main>
           </div>

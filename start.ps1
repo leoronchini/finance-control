@@ -134,7 +134,21 @@ Start-Process "http://localhost:5173"
 try {
     while ($true) {
         Start-Sleep -Seconds 10
-        if ($botProc.HasExited)   { Write-Warn "Bot encerrou inesperadamente (cod $($botProc.ExitCode))." }
+
+        if ($botProc.HasExited) {
+            Write-Warn "Bot encerrou (cod $($botProc.ExitCode)). Reiniciando em 3s..."
+            Start-Sleep -Seconds 3
+            $botProc = Start-Process python `
+                -ArgumentList "main.py" `
+                -WorkingDirectory "$Root\bot" `
+                -PassThru -WindowStyle Hidden
+            if ($botProc.HasExited) {
+                Write-Err "Falha ao reiniciar o bot."
+            } else {
+                Write-Ok "Bot reiniciado  PID $($botProc.Id)"
+            }
+        }
+
         if ($apiProc.HasExited)   { Write-Warn "API encerrou inesperadamente (cod $($apiProc.ExitCode))." }
         if ($frontProc.HasExited) { Write-Warn "Frontend encerrou inesperadamente." }
     }

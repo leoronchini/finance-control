@@ -33,6 +33,6 @@ def get_history():
         }
         for mes, dados in sorted(
             monthly.items(),
-            key=lambda x: (x[0].split("/")[1], x[0].split("/")[0]),
+            key=lambda x: (int(x[0].split("/")[1]), int(x[0].split("/")[0])),
         )
     ]

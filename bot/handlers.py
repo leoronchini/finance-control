@@ -16,7 +16,15 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text(str(e))
         return
 
-    new_id = append_transaction(transaction)
+    try:
+        new_id = append_transaction(transaction)
+    except Exception as e:
+        await update.message.reply_text(
+            f"⚠️ Erro ao gravar na planilha. Tente novamente.\n_{type(e).__name__}: {e}_",
+            parse_mode="Markdown",
+        )
+        return
+
     _last_id[chat_id] = new_id
 
     emoji = "💰" if transaction["tipo"] == "entrada" else "💸"

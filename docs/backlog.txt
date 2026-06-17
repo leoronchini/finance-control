@@ -1,0 +1,2 @@
+tela de 'contas a pagar' com ToDos mensais
+tela de investimentos com todas as analises, graficos, evolução de patrimonio, corretagem do bitcoin etc.
