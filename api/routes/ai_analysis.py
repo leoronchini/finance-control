@@ -3,10 +3,7 @@ from google import genai
 from fastapi import APIRouter, Query, HTTPException
 from datetime import datetime
 from collections import defaultdict
-
-import sys
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from sheets import get_active_transactions
+from api.sheets import get_active_transactions
 
 router = APIRouter()
 

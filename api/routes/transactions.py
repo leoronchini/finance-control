@@ -1,10 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from typing import Optional
-import sys, os
-
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from sheets import get_active_transactions, find_row_by_id, _invalidate_cache
+from api.sheets import get_active_transactions, find_row_by_id, _invalidate_cache
 
 router = APIRouter()
 
@@ -25,7 +22,6 @@ def list_transactions(
     transactions = get_active_transactions()
 
     if mes and ano:
-        # formato DD/MM/AAAA — parte do meio é o mês
         transactions = [
             t for t in transactions
             if len(t["data"].split("/")) == 3

@@ -1,9 +1,9 @@
+import json
 import gspread
 from google.oauth2.service_account import Credentials
 from dotenv import load_dotenv
 import os
 
-# Carrega o .env da raiz do projeto (um nível acima de bot/)
 _ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 load_dotenv(os.path.join(_ROOT, ".env"))
 
@@ -15,19 +15,28 @@ SCOPES = [
 _sheet_cache = None
 
 
+def _get_client() -> gspread.Client:
+    json_str = os.environ.get("GOOGLE_CREDENTIALS_JSON")
+    if json_str:
+        info = json.loads(json_str)
+        creds = Credentials.from_service_account_info(info, scopes=SCOPES)
+    else:
+        path = os.path.join(_ROOT, os.getenv("GOOGLE_CREDENTIALS_PATH").lstrip("./"))
+        creds = Credentials.from_service_account_file(path, scopes=SCOPES)
+    return gspread.authorize(creds)
+
+
 def _get_sheet():
     global _sheet_cache
     if _sheet_cache is None:
-        credentials_path = os.path.join(_ROOT, os.getenv("GOOGLE_CREDENTIALS_PATH").lstrip("./"))
-        creds = Credentials.from_service_account_file(credentials_path, scopes=SCOPES)
-        client = gspread.authorize(creds)
+        client = _get_client()
         spreadsheet = client.open_by_key(os.getenv("GOOGLE_SHEETS_ID"))
         _sheet_cache = spreadsheet.worksheet("transacoes")
     return _sheet_cache
 
 
 def get_next_id(sheet) -> int:
-    values = sheet.col_values(1)  # coluna 'id'
+    values = sheet.col_values(1)
     numeric = [v for v in values[1:] if str(v).strip().isdigit()]
     if not numeric:
         return 1
@@ -47,8 +56,6 @@ def append_transaction(transaction: dict) -> int:
         transaction.get("categoria", ""),
         transaction.get("status", "ativo"),
     ]
-    # RAW: evita que Google Sheets converta datas/horas para seriais numéricos
-    # (USER_ENTERED transforma "16/06/2026" em 46189 e "22:51" em 0.952...)
     sheet.append_row(row, value_input_option="RAW")
     return next_id
 

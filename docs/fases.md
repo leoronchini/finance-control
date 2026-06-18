@@ -67,7 +67,14 @@ Adicionar ao painel um módulo de análise inteligente que lê os dados da plani
 Adicionar ao painel um botão de "Importar PDF" que permite ao usuário fazer upload da fatura do cartão de crédito em formato PDF. O sistema irá extrair os lançamentos do documento, usar a API do Google para interpretar cada item — gerando uma descrição padronizada e identificando o valor de cada transação — e inserir automaticamente todos os registros na planilha como transações do tipo saída. O usuário poderá revisar os itens extraídos antes de confirmar a importação. A IA deve entender cada campo e definir como por exemplo 'Mercado' ou 'Gasolina'. Caso isso não seja possivel, o campo deve ficar como 'pendente' na descrição e o usuario irá preencher manualmente.
 
 
+## Fase 11 — Hospedagem em Nuvem ⏳
+
+**Detalhamento:** [`fase-11-hospedagem-nuvem.md`](fase-11-hospedagem-nuvem.md)
+
+Migrar o bot do modo polling para webhook e publicar todos os serviços em plataformas gratuitas de nuvem, garantindo que o bot processe mensagens do Telegram 24h por dia independente do computador do usuário estar ligado. O bot e a API FastAPI serão unificados em um único serviço no Render (free tier), com o endpoint `POST /webhook` recebendo as atualizações do Telegram. O frontend React será publicado na Vercel. Variáveis de ambiente serão configuradas nos painéis de cada plataforma, substituindo o arquivo `.env` local. O fluxo de deploy será automatizado via GitHub — qualquer push na branch principal atualiza os serviços automaticamente.
+
+---
+
 ## Fase 10 — Resumo de Gastos por Grupo
 
 Adicionar ao painel uma segunda camada de resumo que agrupa os itens em categorias maiores definidas pelo usuário, como gastos fixos (aluguel + condomínio + internet + energia), locomoção (gasolina + estacionamento + transporte), alimentação (mercado + delivery + restaurante), lazer (festas + streaming + saídas), entre outros. Cada grupo exibe o total consolidado do mês e o percentual que representa sobre o total de saídas. O usuário poderá configurar quais descrições pertencem a cada grupo. Depende da Fase 9 pois parte da mesma estrutura de agrupamento e da coluna categoria já em uso.
-

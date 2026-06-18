@@ -1,9 +1,6 @@
 from fastapi import APIRouter
 from collections import defaultdict
-import sys, os
-
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from sheets import get_active_transactions
+from api.sheets import get_active_transactions
 
 router = APIRouter()
 
@@ -18,7 +15,7 @@ def get_history():
         parts = t["data"].split("/")
         if len(parts) != 3:
             continue
-        key = f"{parts[1]}/{parts[2]}"  # MM/AAAA
+        key = f"{parts[1]}/{parts[2]}"
         if t["tipo"] == "entrada":
             monthly[key]["entradas"] += t["valor"]
         elif t["tipo"] == "saída":

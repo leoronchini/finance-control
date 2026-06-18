@@ -1,7 +1,7 @@
 from telegram import Update
 from telegram.ext import ContextTypes
-from parser import parse_message
-from sheets import append_transaction, cancel_transaction
+from bot.parser import parse_message
+from bot.sheets import append_transaction, cancel_transaction
 
 # Guarda o id da última transação gravada por chat_id
 _last_id: dict[int, int] = {}

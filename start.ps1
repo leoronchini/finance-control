@@ -59,10 +59,10 @@ Kill-Port 5175
 Start-Sleep -Seconds 2
 
 # ── Bot Telegram ───────────────────────────────────────────────────────────────
-Write-Log "Iniciando bot Telegram..."
+Write-Log "Iniciando bot Telegram (modo polling local)..."
 $botProc = Start-Process python `
-    -ArgumentList "main.py" `
-    -WorkingDirectory "$Root\bot" `
+    -ArgumentList "-m", "bot.main" `
+    -WorkingDirectory "$Root" `
     -PassThru -WindowStyle Hidden
 
 Start-Sleep -Seconds 2
@@ -76,8 +76,8 @@ Write-Ok "Bot iniciado         PID $($botProc.Id)"
 # ── API FastAPI ────────────────────────────────────────────────────────────────
 Write-Log "Iniciando API FastAPI..."
 $apiProc = Start-Process python `
-    -ArgumentList "-m", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000" `
-    -WorkingDirectory "$Root\api" `
+    -ArgumentList "-m", "uvicorn", "api.main:app", "--host", "0.0.0.0", "--port", "8000" `
+    -WorkingDirectory "$Root" `
     -PassThru -WindowStyle Hidden
 
 Start-Sleep -Seconds 4
@@ -139,8 +139,8 @@ try {
             Write-Warn "Bot encerrou (cod $($botProc.ExitCode)). Reiniciando em 3s..."
             Start-Sleep -Seconds 3
             $botProc = Start-Process python `
-                -ArgumentList "main.py" `
-                -WorkingDirectory "$Root\bot" `
+                -ArgumentList "-m", "bot.main" `
+                -WorkingDirectory "$Root" `
                 -PassThru -WindowStyle Hidden
             if ($botProc.HasExited) {
                 Write-Err "Falha ao reiniciar o bot."

@@ -1,11 +1,9 @@
 from fastapi import APIRouter, Query
 from datetime import datetime
-
-import sys, os
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from sheets import get_active_transactions
+from api.sheets import get_active_transactions
 
 router = APIRouter()
+
 
 @router.get("/summary/items")
 def summary_items(mes: str = Query(None), ano: str = Query(None)):

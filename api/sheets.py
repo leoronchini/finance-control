@@ -1,3 +1,4 @@
+import json
 import gspread
 from google.oauth2.service_account import Credentials
 from dotenv import load_dotenv
@@ -19,14 +20,21 @@ _data_cache_ts: float = 0
 _CACHE_TTL = 30
 
 
+def _get_client() -> gspread.Client:
+    json_str = os.environ.get("GOOGLE_CREDENTIALS_JSON")
+    if json_str:
+        info = json.loads(json_str)
+        creds = Credentials.from_service_account_info(info, scopes=SCOPES)
+    else:
+        path = os.path.join(_ROOT, os.getenv("GOOGLE_CREDENTIALS_PATH").lstrip("./"))
+        creds = Credentials.from_service_account_file(path, scopes=SCOPES)
+    return gspread.authorize(creds)
+
+
 def get_sheet():
     global _sheet_cache
     if _sheet_cache is None:
-        creds = Credentials.from_service_account_file(
-            os.path.join(_ROOT, os.getenv("GOOGLE_CREDENTIALS_PATH").lstrip("./")),
-            scopes=SCOPES,
-        )
-        client = gspread.authorize(creds)
+        client = _get_client()
         spreadsheet = client.open_by_key(os.getenv("GOOGLE_SHEETS_ID"))
         _sheet_cache = spreadsheet.worksheet("transacoes")
     return _sheet_cache
@@ -38,8 +46,6 @@ def _invalidate_cache():
 
 
 def _serial_to_date(value) -> str:
-    """Converte serial de data do Google Sheets (ex: 46189) para DD/MM/AAAA.
-    Se já for string, retorna como está."""
     if isinstance(value, (int, float)) and value > 1:
         dt = datetime(1899, 12, 30) + timedelta(days=int(value))
         return dt.strftime("%d/%m/%Y")
@@ -47,8 +53,6 @@ def _serial_to_date(value) -> str:
 
 
 def _serial_to_time(value) -> str:
-    """Converte serial de hora do Google Sheets (ex: 0.9520) para HH:MM.
-    Se já for string, retorna como está."""
     if isinstance(value, float) and 0 <= value < 1:
         total_min = round(value * 24 * 60)
         h, m = divmod(total_min, 60)
@@ -57,7 +61,6 @@ def _serial_to_time(value) -> str:
 
 
 def _normalize_record(r: dict) -> dict:
-    """Normaliza um registro lido com UNFORMATTED_VALUE."""
     r["data"] = _serial_to_date(r.get("data", ""))
     r["hora"] = _serial_to_time(r.get("hora", ""))
     r["valor"] = float(r.get("valor") or 0)
@@ -68,8 +71,6 @@ def get_active_transactions() -> list[dict]:
     global _data_cache, _data_cache_ts
     now = time.time()
     if now - _data_cache_ts > _CACHE_TTL:
-        # UNFORMATTED_VALUE evita que o gspread confunda separadores de locale:
-        # "103,45" (pt-BR) → numericise errado → 10345. Com UNFORMATTED vem 103.45 direto.
         records = get_sheet().get_all_records(value_render_option="UNFORMATTED_VALUE")
         _data_cache = [
             _normalize_record(r)

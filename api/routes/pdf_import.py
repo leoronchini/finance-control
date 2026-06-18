@@ -5,17 +5,13 @@ import pdfplumber
 from google import genai
 from fastapi import APIRouter, UploadFile, File, HTTPException, Body
 from datetime import datetime
-
-import sys
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from sheets_write import append_transaction
-from sheets import _invalidate_cache
+from bot.sheets import append_transaction
+from api.sheets import _invalidate_cache
 
 router = APIRouter()
 
 
 def _normalize_date(date_str: str) -> str | None:
-    """Garante formato DD/MM/AAAA com zero-padding."""
     if not date_str:
         return None
     parts = date_str.split("/")

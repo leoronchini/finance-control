@@ -1,10 +1,7 @@
 from fastapi import APIRouter
 from typing import Optional
 from datetime import datetime
-import sys, os
-
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from sheets import get_active_transactions
+from api.sheets import get_active_transactions
 
 router = APIRouter()
 
