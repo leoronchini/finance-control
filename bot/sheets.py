@@ -47,7 +47,9 @@ def append_transaction(transaction: dict) -> int:
         transaction.get("categoria", ""),
         transaction.get("status", "ativo"),
     ]
-    sheet.append_row(row, value_input_option="USER_ENTERED")
+    # RAW: evita que Google Sheets converta datas/horas para seriais numéricos
+    # (USER_ENTERED transforma "16/06/2026" em 46189 e "22:51" em 0.952...)
+    sheet.append_row(row, value_input_option="RAW")
     return next_id
 
 
