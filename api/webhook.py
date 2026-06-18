@@ -1,7 +1,7 @@
 import os
 import logging
 from telegram import Update
-from telegram.ext import Application
+from telegram.ext import Application, ApplicationBuilder, MessageHandler, filters
 from fastapi import Request, Response
 
 logger = logging.getLogger(__name__)
@@ -15,8 +15,19 @@ async def init_telegram():
     if not token:
         logger.warning("TELEGRAM_BOT_TOKEN não definido — webhook desativado")
         return
-    from bot.main import build_application
-    app = build_application(token)
+
+    chat_id = int(os.getenv("TELEGRAM_CHAT_ID"))
+    from bot.handlers import handle_message, handle_cancel
+
+    cancel_keywords = filters.Regex(r"^(cancelar|desfazer)$")
+    auth = filters.ChatType.PRIVATE & filters.User(user_id=chat_id)
+
+    # updater(None) é obrigatório em modo webhook — sem ele o PTB tenta criar
+    # um Updater para polling, o que é desnecessário e quebra no Python 3.14
+    app = ApplicationBuilder().token(token).updater(None).build()
+    app.add_handler(MessageHandler(auth & cancel_keywords, handle_cancel))
+    app.add_handler(MessageHandler(auth & filters.TEXT & ~filters.COMMAND, handle_message))
+
     await app.initialize()
     _telegram_app = app
     logger.info("Telegram webhook inicializado")
