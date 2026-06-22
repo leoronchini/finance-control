@@ -23,8 +23,13 @@ Telegram → bot/ → Google Sheets ← api/ ← frontend/
 | 2 — Google Sheets | ✅ Concluída |
 | 3 — Bot Telegram | ✅ Concluída |
 | 4 — API FastAPI | ✅ Concluída |
-| 5 — Frontend React | ⏳ Pendente |
+| 5 — Frontend React | ✅ Concluída |
 | 6 — Script de inicialização e testes finais | ✅ Concluída |
+| 7 — Resumo de Gastos por Item | ✅ Concluída |
+| 8 — Análise de Dados com IA | ⏳ Pendente |
+| 9 — Importação de Fatura via PDF | ⏳ Pendente |
+| 10 — Resumo de Gastos por Grupo | ⏳ Pendente |
+| 11 — Hospedagem em Nuvem | ✅ Concluída |
 
 ## Estrutura de arquivos
 
@@ -125,5 +130,15 @@ Toda a documentação fica em `docs/`:
 
 - `docs/PRD.md` — requisitos de produto
 - `docs/PRD-tecnico.md` — especificação técnica detalhada
-- `docs/fases.md` — visão geral das 6 fases
-- `docs/fase-1-bootstrap.md` até `docs/fase-6-inicializacao-e-testes.md` — detalhamento de cada fase
+- `docs/fases.md` — visão geral e status de todas as fases
+- `docs/done/` — detalhamento das fases concluídas
+- `docs/fase-*.md` — detalhamento das fases pendentes
+
+## Regra: atualização de status de fases
+
+**Sempre que uma fase for concluída**, dois passos obrigatórios:
+
+1. **Mover o arquivo** de `docs/fase-N-nome.md` para `docs/done/fase-N-nome.md`
+2. **Atualizar `docs/fases.md`**: trocar o status para `✅` e corrigir o link para `done/fase-N-nome.md`
+
+Adicionalmente, atualizar a tabela de "Estado atual" neste `CLAUDE.md` marcando a fase como `✅ Concluída`.

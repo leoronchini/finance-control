@@ -6,7 +6,7 @@
 
 Criar estrutura de pastas, arquivos base, `.env`, `.gitignore`, `requirements.txt`. Projeto vazio mas organizado conforme a estrutura definida no PRD técnico.
 
-**Detalhamento:** [`fase-1-bootstrap.md`](fase-1-bootstrap.md)
+**Detalhamento:** [`done/fase-1-bootstrap.md`](done/fase-1-bootstrap.md)
 
 ---
 
@@ -14,7 +14,7 @@ Criar estrutura de pastas, arquivos base, `.env`, `.gitignore`, `requirements.tx
 
 Configurar credenciais da API do Google, criar a planilha com as colunas definidas no PRD e implementar o módulo `bot/sheets.py` com leitura e escrita via `gspread`.
 
-**Detalhamento:** [`fase-2-google-sheets.md`](fase-2-google-sheets.md)
+**Detalhamento:** [`done/fase-2-google-sheets.md`](done/fase-2-google-sheets.md)
 
 ---
 
@@ -22,7 +22,7 @@ Configurar credenciais da API do Google, criar a planilha com as colunas definid
 
 Criar o bot, implementar o parser de mensagens (`parser.py`), gravar transações no Sheets e responder com confirmação. Implementar o comando `cancelar`/`desfazer`.
 
-**Detalhamento:** [`fase-3-bot-telegram.md`](fase-3-bot-telegram.md)
+**Detalhamento:** [`done/fase-3-bot-telegram.md`](done/fase-3-bot-telegram.md)
 
 ---
 
@@ -30,15 +30,15 @@ Criar o bot, implementar o parser de mensagens (`parser.py`), gravar transaçõe
 
 Criar os endpoints `GET /transactions`, `GET /summary`, `GET /history`, `PATCH` e `DELETE`. Validar que todos os dados retornam corretamente a partir da planilha.
 
-**Detalhamento:** [`fase-4-api-fastapi.md`](fase-4-api-fastapi.md)
+**Detalhamento:** [`done/fase-4-api-fastapi.md`](done/fase-4-api-fastapi.md)
 
 ---
 
-## Fase 5 — Frontend React ⏳
+## Fase 5 — Frontend React ✅
 
 Criar as três telas (Dashboard, Transactions, History) com os cards, tabela, gráficos e modal de edição. Conectar ao FastAPI local.
 
-**Detalhamento:** [`fase-5-frontend-react.md`](fase-5-frontend-react.md)
+**Detalhamento:** [`done/fase-5-frontend-react.md`](done/fase-5-frontend-react.md)
 
 ---
 
@@ -46,35 +46,42 @@ Criar as três telas (Dashboard, Transactions, History) com os cards, tabela, gr
 
 Criar os scripts `start.bat`, `start.ps1` e `start.sh` para subir todos os serviços com um único comando. Corrigir bugs encontrados durante os testes de integração. Validar o fluxo completo ponta a ponta.
 
-**Detalhamento:** [`fase-6-inicializacao-e-testes.md`](fase-6-inicializacao-e-testes.md)
-
-## Fase 7 — Resumo de Gastos por Item ⏳
-
-**Detalhamento:** [`fase-7-resumo-por-item.md`](fase-7-resumo-por-item.md)
-
-Adicionar ao painel uma tela de resumo que agrupa e totaliza os gastos do mês por descrição individual, listando cada item com seu valor total gasto no período. Exemplos de saída: mercado R$ 430,00 · gasolina R$ 310,00 · almoço R$ 215,00 · aluguel R$ 1.200,00. O usuário poderá filtrar por mês e alternar entre visualização em tabela e gráfico de barras. Esta fase depende da coluna categoria estar minimamente preenchida na planilha para os itens que o usuário quiser agrupar. Funcionalidade exclusivamente de leitura — nenhum dado é gravado.
-
-## Fase 8 — Análise de Dados com IA
-
-**Detalhamento:** [`fase-8-analise-ia.md`](fase-8-analise-ia.md)
-
-Adicionar ao painel um módulo de análise inteligente que lê os dados da planilha e usa a API do Gemini para gerar insights sobre os gastos do usuário. A IA receberá as transações do mês selecionado e retornará uma análise em linguagem natural com observações sobre padrões de consumo, categorias com maior gasto, comparativo com meses anteriores e sugestões de economia. O resultado será exibido no painel em uma nova seção ou tela dedicada, acionada por um botão. Nenhum dado novo é gravado na planilha nesta fase — é uma funcionalidade exclusivamente de leitura e análise.
-
-## Fase 09 — Importação de Fatura via PDF
-
-**Detalhamento:** [`fase-09-importacao-pdf.md`](fase-09-importacao-pdf.md)
-
-Adicionar ao painel um botão de "Importar PDF" que permite ao usuário fazer upload da fatura do cartão de crédito em formato PDF. O sistema irá extrair os lançamentos do documento, usar a API do Google para interpretar cada item — gerando uma descrição padronizada e identificando o valor de cada transação — e inserir automaticamente todos os registros na planilha como transações do tipo saída. O usuário poderá revisar os itens extraídos antes de confirmar a importação. A IA deve entender cada campo e definir como por exemplo 'Mercado' ou 'Gasolina'. Caso isso não seja possivel, o campo deve ficar como 'pendente' na descrição e o usuario irá preencher manualmente.
-
-
-## Fase 11 — Hospedagem em Nuvem ⏳
-
-**Detalhamento:** [`fase-11-hospedagem-nuvem.md`](fase-11-hospedagem-nuvem.md)
-
-Migrar o bot do modo polling para webhook e publicar todos os serviços em plataformas gratuitas de nuvem, garantindo que o bot processe mensagens do Telegram 24h por dia independente do computador do usuário estar ligado. O bot e a API FastAPI serão unificados em um único serviço no Render (free tier), com o endpoint `POST /webhook` recebendo as atualizações do Telegram. O frontend React será publicado na Vercel. Variáveis de ambiente serão configuradas nos painéis de cada plataforma, substituindo o arquivo `.env` local. O fluxo de deploy será automatizado via GitHub — qualquer push na branch principal atualiza os serviços automaticamente.
+**Detalhamento:** [`done/fase-6-inicializacao-e-testes.md`](done/fase-6-inicializacao-e-testes.md)
 
 ---
 
-## Fase 10 — Resumo de Gastos por Grupo
+## Fase 7 — Resumo de Gastos por Item ✅
 
-Adicionar ao painel uma segunda camada de resumo que agrupa os itens em categorias maiores definidas pelo usuário, como gastos fixos (aluguel + condomínio + internet + energia), locomoção (gasolina + estacionamento + transporte), alimentação (mercado + delivery + restaurante), lazer (festas + streaming + saídas), entre outros. Cada grupo exibe o total consolidado do mês e o percentual que representa sobre o total de saídas. O usuário poderá configurar quais descrições pertencem a cada grupo. Depende da Fase 9 pois parte da mesma estrutura de agrupamento e da coluna categoria já em uso.
+Adicionar ao painel uma tela de resumo que agrupa e totaliza os gastos do mês por descrição individual, listando cada item com seu valor total gasto no período. O usuário poderá filtrar por mês e alternar entre visualização em tabela e gráfico de barras. Inclui a aba `resumo_por_item` no Google Sheets (fórmulas nativas) e o endpoint `GET /summary/items` na API.
+
+**Detalhamento:** [`done/fase-7-resumo-por-item.md`](done/fase-7-resumo-por-item.md)
+
+---
+
+## Fase 8 — Análise de Dados com IA ⏳
+
+Adicionar ao painel um módulo de análise inteligente que lê os dados da planilha e usa a API do Gemini para gerar insights sobre os gastos do usuário. A IA receberá as transações do mês selecionado e retornará uma análise em linguagem natural com observações sobre padrões de consumo, categorias com maior gasto, comparativo com meses anteriores e sugestões de economia. O resultado será exibido no painel em uma nova seção ou tela dedicada, acionada por um botão. Nenhum dado novo é gravado na planilha nesta fase — é uma funcionalidade exclusivamente de leitura e análise.
+
+**Detalhamento:** [`fase-8-analise-ia.md`](fase-8-analise-ia.md)
+
+---
+
+## Fase 09 — Importação de Fatura via PDF ⏳
+
+Adicionar ao painel um botão de "Importar PDF" que permite ao usuário fazer upload da fatura do cartão de crédito em formato PDF. O sistema irá extrair os lançamentos do documento, usar a API do Google para interpretar cada item — gerando uma descrição padronizada e identificando o valor de cada transação — e inserir automaticamente todos os registros na planilha como transações do tipo saída. O usuário poderá revisar os itens extraídos antes de confirmar a importação.
+
+**Detalhamento:** [`fase-09-importacao-pdf.md`](fase-09-importacao-pdf.md)
+
+---
+
+## Fase 10 — Resumo de Gastos por Grupo ⏳
+
+Adicionar ao painel uma segunda camada de resumo que agrupa os itens em categorias maiores definidas pelo usuário, como gastos fixos, locomoção, alimentação, lazer, entre outros. Cada grupo exibe o total consolidado do mês e o percentual que representa sobre o total de saídas. O usuário poderá configurar quais descrições pertencem a cada grupo. Depende da Fase 9.
+
+---
+
+## Fase 11 — Hospedagem em Nuvem ✅
+
+Migrar o bot do modo polling para webhook e publicar todos os serviços em plataformas gratuitas de nuvem, garantindo que o bot processe mensagens do Telegram 24h por dia independente do computador do usuário estar ligado. Bot e API FastAPI unificados no Render (free tier); frontend publicado na Vercel. Deploy automatizado via GitHub.
+
+**Detalhamento:** [`fase-11-hospedagem-nuvem.md`](fase-11-hospedagem-nuvem.md)
