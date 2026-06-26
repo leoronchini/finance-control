@@ -66,22 +66,32 @@ Adicionar ao painel um módulo de análise inteligente que lê os dados da plani
 
 ---
 
-## Fase 09 — Importação de Fatura via PDF ⏳
+## Fase 9 — Importação de Fatura via PDF ⏳
 
-Adicionar ao painel um botão de "Importar PDF" que permite ao usuário fazer upload da fatura do cartão de crédito em formato PDF. O sistema irá extrair os lançamentos do documento, usar a API do Google para interpretar cada item — gerando uma descrição padronizada e identificando o valor de cada transação — e inserir automaticamente todos os registros na planilha como transações do tipo saída. O usuário poderá revisar os itens extraídos antes de confirmar a importação.
+Adicionar ao painel um botão de "Importar PDF" que permite ao usuário fazer upload da fatura do cartão de crédito em formato PDF. O sistema irá extrair os lançamentos do documento, usar a API do Gemini para interpretar cada item — gerando uma descrição padronizada e identificando o valor de cada transação — e inserir automaticamente todos os registros na planilha como transações do tipo saída. O usuário poderá revisar os itens extraídos antes de confirmar a importação.
 
 **Detalhamento:** [`fase-09-importacao-pdf.md`](fase-09-importacao-pdf.md)
 
 ---
 
-## Fase 10 — Resumo de Gastos por Grupo ⏳
+## Fase 10 — Persistência com Banco de Dados (Supabase) ⏳
 
-Adicionar ao painel uma segunda camada de resumo que agrupa os itens em categorias maiores definidas pelo usuário, como gastos fixos, locomoção, alimentação, lazer, entre outros. Cada grupo exibe o total consolidado do mês e o percentual que representa sobre o total de saídas. O usuário poderá configurar quais descrições pertencem a cada grupo. Depende da Fase 9.
+Introduzir um banco de dados PostgreSQL externo (Supabase free tier) como camada de persistência complementar ao Google Sheets. O Sheets continua sendo a fonte de verdade das transações financeiras; o banco é usado para dados estruturados que não cabem bem numa planilha — a memória do agente de agrupamento (Fase 11) é o primeiro caso de uso. Inclui a criação do projeto Supabase, a configuração da conexão na API, o módulo `api/db.py` e a criação das primeiras tabelas (`grupos` e `regras_grupo`). **Pré-requisito para a Fase 11.**
+
+**Detalhamento:** [`fase-10-persistencia-banco.md`](fase-10-persistencia-banco.md)
 
 ---
 
-## Fase 11 — Hospedagem em Nuvem ✅
+## Fase 11 — Resumo de Gastos por Grupo (Agrupamento com IA) ⏳
+
+Adicionar ao painel uma camada de resumo que agrupa **todos os lançamentos do mês** (entradas e saídas) em grupos maiores. O agrupamento é feito por um **agente de IA** com **memória**: ele tenta categorizar sozinho cada lançamento, mas nunca chuta — quando tem dúvida, devolve o item para o usuário decidir na tela, e a decisão vira regra permanente no banco. A IA também pode sugerir grupos novos (sujeitos a aprovação). Cada grupo exibe total consolidado e percentual. **Depende da Fase 10 (banco de dados).**
+
+**Detalhamento:** [`fase-11-resumo-por-grupo.md`](fase-11-resumo-por-grupo.md)
+
+---
+
+## Fase 12 — Hospedagem em Nuvem ✅
 
 Migrar o bot do modo polling para webhook e publicar todos os serviços em plataformas gratuitas de nuvem, garantindo que o bot processe mensagens do Telegram 24h por dia independente do computador do usuário estar ligado. Bot e API FastAPI unificados no Render (free tier); frontend publicado na Vercel. Deploy automatizado via GitHub.
 
-**Detalhamento:** [`fase-11-hospedagem-nuvem.md`](fase-11-hospedagem-nuvem.md)
+**Detalhamento:** [`done/fase-12-hospedagem-nuvem.md`](done/fase-12-hospedagem-nuvem.md)

@@ -1,10 +1,10 @@
-# CLAUDE.md — Finance Control
+# CLAUDE.md
 
-Guia de contexto para o Claude Code trabalhar neste projeto.
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## O que é este projeto
 
-Bot de controle financeiro pessoal. O usuário envia mensagens pelo Telegram e os dados vão para o Google Sheets. Um painel web local (React + FastAPI) permite visualizar, editar e excluir transações.
+Bot de controle financeiro pessoal. O usuário envia mensagens pelo Telegram e os dados vão para o Google Sheets. Um painel web (React + FastAPI) permite visualizar, editar e excluir transações.
 
 ```
 Telegram → bot/ → Google Sheets ← api/ ← frontend/
@@ -13,7 +13,6 @@ Telegram → bot/ → Google Sheets ← api/ ← frontend/
 - **bot/** é o único módulo que **escreve** na planilha
 - **api/** é o único módulo que **lê** a planilha e serve o frontend
 - **frontend/** nunca acessa o Google Sheets diretamente
-- Tudo roda localmente na máquina do usuário
 
 ## Estado atual
 
@@ -26,119 +25,116 @@ Telegram → bot/ → Google Sheets ← api/ ← frontend/
 | 5 — Frontend React | ✅ Concluída |
 | 6 — Script de inicialização e testes finais | ✅ Concluída |
 | 7 — Resumo de Gastos por Item | ✅ Concluída |
-| 8 — Análise de Dados com IA | ⏳ Pendente |
+| 8 — Análise de Dados com IA | ✅ Concluída |
 | 9 — Importação de Fatura via PDF | ⏳ Pendente |
-| 10 — Resumo de Gastos por Grupo | ⏳ Pendente |
-| 11 — Hospedagem em Nuvem | ✅ Concluída |
-
-## Estrutura de arquivos
-
-```
-finance-control/
-├── bot/
-│   ├── main.py         # inicialização + filtro de autenticação
-│   ├── handlers.py     # handle_message, handle_cancel
-│   ├── parser.py       # parse_message() — extrai valor, tipo, descrição
-│   └── sheets.py       # append_transaction, cancel_transaction, get_all_transactions
-│
-├── api/
-│   ├── main.py         # FastAPI app + CORS
-│   ├── sheets.py       # get_active_transactions, find_row_by_id
-│   └── routes/
-│       ├── transactions.py  # GET /transactions, PATCH, DELETE
-│       ├── summary.py       # GET /summary
-│       └── history.py       # GET /history
-│
-├── frontend/           # gerado na Fase 5 (Vite + React)
-├── credentials/        # google-credentials.json (nunca versionado)
-├── docs/               # toda a documentação do projeto
-├── .env                # variáveis reais (nunca versionado)
-├── .env.example        # modelo público
-├── requirements.txt
-├── start.sh
-└── README.md
-```
+| 10 — Persistência com Banco de Dados (Supabase) | ⏳ Pendente |
+| 11 — Resumo de Gastos por Grupo (Agrupamento com IA) | ⏳ Pendente (bloqueada pela 10) |
+| 12 — Hospedagem em Nuvem | ✅ Concluída |
 
 ## Como rodar
 
-```bash
-# Bot Telegram
-cd bot && python main.py
+```powershell
+# Tudo de uma vez (recomendado)
+.\start.bat
 
-# API FastAPI
-cd api && python -m uvicorn main:app --port 8000
-
-# Frontend (Fase 5)
-cd frontend && npm run dev
+# Individualmente (desenvolvimento)
+python -m bot.main                                          # bot polling local
+python -m uvicorn api.main:app --host 0.0.0.0 --port 8000  # API
+cd frontend && npm run dev                                  # frontend
 ```
 
-## Variáveis de ambiente obrigatórias
+**Sempre rodar da raiz do projeto** — os módulos usam imports absolutos (`bot.main`, `api.main`).
+
+## Arquitetura
+
+### bot/
+
+| Arquivo | Responsabilidade |
+|---|---|
+| `main.py` | `ApplicationBuilder`, registro dos handlers com filtro de auth |
+| `handlers.py` | `handle_message`, `handle_cancel` — lógica de resposta ao Telegram |
+| `parser.py` | `parse_message()` — extrai valor, tipo, descrição do texto livre |
+| `sheets.py` | `append_transaction`, `cancel_transaction`, `get_all_transactions` |
+
+### api/
+
+| Arquivo | Responsabilidade |
+|---|---|
+| `main.py` | FastAPI app, CORS, lifespan, registro de todos os routers |
+| `sheets.py` | `get_active_transactions`, `find_row_by_id` — leitura da planilha |
+| `sheets_write.py` | Re-exporta `append_transaction` do bot para uso interno |
+| `webhook.py` | `init_telegram`, `handle_webhook` — recebe updates do Telegram via POST `/webhook` |
+| `routes/transactions.py` | `GET /transactions`, `PATCH /transactions/{id}`, `DELETE /transactions/{id}` |
+| `routes/summary.py` | `GET /summary` |
+| `routes/summary_items.py` | `GET /summary/items` — saídas agrupadas por descrição |
+| `routes/history.py` | `GET /history` |
+| `routes/ai_analysis.py` | `POST /ai/analysis` — análise por Gemini |
+| `routes/pdf_import.py` | `POST /pdf/import` — importação de fatura PDF |
+
+### Dois modos de operação do bot
+
+O bot pode funcionar em dois modos:
+
+- **Polling local** (`bot/main.py`): usado em desenvolvimento local via `start.bat`. Processo separado que faz polling no Telegram.
+- **Webhook** (`api/webhook.py`): usado em produção (nuvem). O Telegram envia updates via POST para `/webhook`. Inicializado no lifespan da API FastAPI com `updater(None)` (obrigatório — sem ele o PTB tenta criar um Updater para polling).
+
+Em produção, **somente a API sobe** — o bot roda embutido nela via webhook.
+
+### scripts/
+
+`scripts/setup_resumo_por_item.py` — cria/recria a aba `resumo_por_item` no Google Sheets com fórmulas QUERY. Rodar manualmente quando necessário.
+
+## Variáveis de ambiente
 
 ```
 TELEGRAM_BOT_TOKEN      token do @BotFather
 TELEGRAM_CHAT_ID        id do chat do dono do bot
-GOOGLE_SHEETS_ID        id da planilha (URL do Sheets)
+GOOGLE_SHEETS_ID        id da planilha (da URL do Sheets)
 GOOGLE_CREDENTIALS_PATH ./credentials/google-credentials.json
 API_PORT                8000
+GEMINI_API_KEY          chave da API do Google Gemini
 ```
 
-## Convenções do projeto
+## Convenções críticas
 
-- **Datas** no formato `DD/MM/AAAA` — sempre string, nunca objeto date
-- **Horas** no formato `HH:MM`
-- **Tipos** de transação: exatamente `"entrada"` ou `"saída"` (com acento)
+- **Datas** no formato `DD/MM/AAAA` — sempre string. Filtro por mês: `split("/")[1]`, por ano: `split("/")[2]`
+- **Tipos**: exatamente `"entrada"` ou `"saída"` (com acento no ã)
 - **Status**: exatamente `"ativo"` ou `"cancelado"`
-- **IDs** são sequenciais inteiros, nunca reutilizados após cancelamento
-- O campo `categoria` existe mas fica vazio na V1.0
-- Nunca deletar linha da planilha — apenas mudar `status` para `"cancelado"`
+- **Nunca deletar linhas** da planilha — apenas mudar `status` para `"cancelado"`
+- **IDs** são sequenciais inteiros, nunca reutilizados
 
-## Resolução de paths
+## Imports e paths
 
-Tanto `bot/` quanto `api/` usam este padrão para encontrar a raiz do projeto:
+Todos os módulos resolvem o `.env` a partir da raiz do projeto:
 
 ```python
 _ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 load_dotenv(os.path.join(_ROOT, ".env"))
 ```
 
-Isso garante que funcionem independente do diretório de trabalho.
-
-## Filtro de mês/ano na API
-
-O formato da data na planilha é `DD/MM/AAAA`. O filtro usa `split("/")`:
-- `parts[0]` = dia
-- `parts[1]` = mês
-- `parts[2]` = ano
-
-```python
-t["data"].split("/")[1] == mes.zfill(2)
-t["data"].split("/")[2] == ano
-```
+Imports dentro de `api/routes/` usam prefixo completo: `from api.sheets import ...` (não `from sheets import ...`), pois a API é iniciada da raiz com `python -m uvicorn api.main:app`.
 
 ## Autenticação do bot
 
-Feita via filtro do `python-telegram-bot` no registro do handler — não há validação manual nos handlers:
+Feita via filtro no registro do handler — não há validação manual dentro dos handlers:
 
 ```python
 auth = filters.ChatType.PRIVATE & filters.User(user_id=ALLOWED_CHAT_ID)
 app.add_handler(MessageHandler(auth & ..., handler_fn))
 ```
 
+## Regra: atualização de status de fases
+
+Sempre que uma fase for concluída:
+
+1. **Mover** `docs/fase-N-nome.md` → `docs/done/fase-N-nome.md`
+2. **Atualizar** `docs/fases.md`: status `✅` e link para `done/fase-N-nome.md`
+3. **Atualizar** a tabela "Estado atual" neste CLAUDE.md
+
 ## Documentação
 
-Toda a documentação fica em `docs/`:
-
 - `docs/PRD.md` — requisitos de produto
-- `docs/PRD-tecnico.md` — especificação técnica detalhada
+- `docs/PRD-tecnico.md` — especificação técnica
 - `docs/fases.md` — visão geral e status de todas as fases
 - `docs/done/` — detalhamento das fases concluídas
 - `docs/fase-*.md` — detalhamento das fases pendentes
-
-## Regra: atualização de status de fases
-
-**Sempre que uma fase for concluída**, dois passos obrigatórios:
-
-1. **Mover o arquivo** de `docs/fase-N-nome.md` para `docs/done/fase-N-nome.md`
-2. **Atualizar `docs/fases.md`**: trocar o status para `✅` e corrigir o link para `done/fase-N-nome.md`
-
-Adicionalmente, atualizar a tabela de "Estado atual" neste `CLAUDE.md` marcando a fase como `✅ Concluída`.
