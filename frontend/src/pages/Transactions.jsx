@@ -72,7 +72,7 @@ export default function Transactions() {
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
         <MonthSelector />
         <div style={{ display: 'flex', gap: 4 }}>
-          {[['all','Todas'],['entrada','Entradas'],['saída','Saídas'],['reembolso','Reembolsos']].map(([v, l]) => (
+          {[['all','Todas'],['entrada','Entradas'],['saída','Saídas'],['reembolso','Reembolsos'],['investimento','Investimentos']].map(([v, l]) => (
             <button key={v} style={filterBtn(filter === v)} onClick={() => setFilter(v)}>{l}</button>
           ))}
         </div>

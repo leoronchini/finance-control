@@ -20,16 +20,18 @@ def get_summary(mes: Optional[str] = None, ano: Optional[str] = None):
         and t["data"].split("/")[2] == ano
     ]
 
-    total_entradas   = sum(t["valor"] for t in filtered if t["tipo"] == "entrada")
-    total_saidas     = sum(t["valor"] for t in filtered if t["tipo"] == "saída")
-    total_reembolsos = sum(t["valor"] for t in filtered if t["tipo"] == "reembolso")
+    total_entradas    = sum(t["valor"] for t in filtered if t["tipo"] == "entrada")
+    total_saidas      = sum(t["valor"] for t in filtered if t["tipo"] == "saída")
+    total_reembolsos  = sum(t["valor"] for t in filtered if t["tipo"] == "reembolso")
+    total_investidos  = sum(t["valor"] for t in filtered if t["tipo"] == "investimento")
 
     return {
-        "total_entradas":   round(total_entradas, 2),
-        "total_saidas":     round(total_saidas, 2),
-        "total_reembolsos": round(total_reembolsos, 2),
-        "custo_real":       round(total_saidas - total_reembolsos, 2),
-        "saldo":            round(total_entradas + total_reembolsos - total_saidas, 2),
+        "total_entradas":    round(total_entradas, 2),
+        "total_saidas":      round(total_saidas, 2),
+        "total_reembolsos":  round(total_reembolsos, 2),
+        "total_investidos":  round(total_investidos, 2),
+        "custo_real":        round(total_saidas - total_reembolsos, 2),
+        "saldo":             round(total_entradas + total_reembolsos - total_saidas - total_investidos, 2),
         "mes": mes,
         "ano": ano,
     }

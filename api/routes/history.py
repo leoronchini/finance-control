@@ -9,7 +9,7 @@ router = APIRouter()
 def get_history():
     transactions = get_active_transactions()
 
-    monthly: dict[str, dict] = defaultdict(lambda: {"entradas": 0.0, "saidas": 0.0, "reembolsos": 0.0})
+    monthly: dict[str, dict] = defaultdict(lambda: {"entradas": 0.0, "saidas": 0.0, "reembolsos": 0.0, "investimentos": 0.0})
 
     for t in transactions:
         parts = t["data"].split("/")
@@ -22,15 +22,18 @@ def get_history():
             monthly[key]["saidas"] += t["valor"]
         elif t["tipo"] == "reembolso":
             monthly[key]["reembolsos"] += t["valor"]
+        elif t["tipo"] == "investimento":
+            monthly[key]["investimentos"] += t["valor"]
 
     return [
         {
-            "mes": mes,
-            "entradas":   round(dados["entradas"], 2),
-            "saidas":     round(dados["saidas"], 2),
-            "reembolsos": round(dados["reembolsos"], 2),
-            "custo_real": round(dados["saidas"] - dados["reembolsos"], 2),
-            "saldo":      round(dados["entradas"] + dados["reembolsos"] - dados["saidas"], 2),
+            "mes":          mes,
+            "entradas":     round(dados["entradas"], 2),
+            "saidas":       round(dados["saidas"], 2),
+            "reembolsos":   round(dados["reembolsos"], 2),
+            "investimentos":round(dados["investimentos"], 2),
+            "custo_real":   round(dados["saidas"] - dados["reembolsos"], 2),
+            "saldo":        round(dados["entradas"] + dados["reembolsos"] - dados["saidas"] - dados["investimentos"], 2),
         }
         for mes, dados in sorted(
             monthly.items(),

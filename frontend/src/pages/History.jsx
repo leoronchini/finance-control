@@ -45,6 +45,7 @@ export default function History() {
                   <Bar dataKey="entradas" name="Entradas" fill="var(--green)" radius={[4,4,0,0]} />
                   <Bar dataKey="saidas" name="Saídas" fill="var(--red)" radius={[4,4,0,0]} />
                   <Bar dataKey="reembolsos" name="Reembolsos" fill="#3b82f6" radius={[4,4,0,0]} />
+                  <Bar dataKey="investimentos" name="Investimentos" fill="#a855f7" radius={[4,4,0,0]} />
                   <Line dataKey="saldo" name="Saldo" stroke="var(--blue)" strokeWidth={2} dot={{ r: 3 }} />
                 </ComposedChart>
               </ResponsiveContainer>
@@ -52,6 +53,7 @@ export default function History() {
                 <Legend_ color="var(--green)" label="Entradas" />
                 <Legend_ color="var(--red)" label="Saídas" />
                 <Legend_ color="#3b82f6" label="Reembolsos" />
+                <Legend_ color="#a855f7" label="Investimentos" />
                 <Legend_ color="var(--blue)" label="Saldo" line />
               </div>
             </>
@@ -64,7 +66,7 @@ export default function History() {
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
               <tr style={{ borderBottom: '1px solid var(--border)' }}>
-                {['Mês','Entradas','Saídas','Reembolsos','Saldo'].map(h => (
+                {['Mês','Entradas','Saídas','Reembolsos','Investimentos','Saldo'].map(h => (
                   <th key={h} style={{
                     color: 'var(--muted)', fontSize: 11, textTransform: 'uppercase',
                     letterSpacing: '.5px', padding: '8px 12px', textAlign: 'left', fontWeight: 600,
@@ -83,6 +85,7 @@ export default function History() {
                   <td style={{ padding: '11px 12px', color: 'var(--green)' }}>{currency(row.entradas)}</td>
                   <td style={{ padding: '11px 12px', color: 'var(--red)' }}>{currency(row.saidas)}</td>
                   <td style={{ padding: '11px 12px', color: '#3b82f6' }}>{currency(row.reembolsos ?? 0)}</td>
+                  <td style={{ padding: '11px 12px', color: '#a855f7' }}>{currency(row.investimentos ?? 0)}</td>
                   <td style={{ padding: '11px 12px', fontWeight: 600, color: row.saldo >= 0 ? 'var(--green)' : 'var(--red)' }}>
                     {currency(row.saldo)}
                   </td>

@@ -6,12 +6,50 @@ _REEMBOLSO_RE = re.compile(
     re.IGNORECASE,
 )
 
+_INVEST_RE = re.compile(
+    r"investimento|investi|aplica[çc][aã]o|apliquei|aporte|aportar",
+    re.IGNORECASE,
+)
+
 
 def parse_message(text: str) -> dict:
     text = text.strip()
     tipo = "saída"
 
     lower = text.lower()
+
+    # --- investimento (verificar antes de entrada/saída) ---
+    if _INVEST_RE.search(lower):
+        tipo = "investimento"
+        sem_gatilho = _INVEST_RE.sub("", text).strip()
+        sem_gatilho = re.sub(r"\b(de|do|da|em|os|as|um|uma)\b", " ", sem_gatilho, flags=re.IGNORECASE)
+        sem_gatilho = re.sub(r"\s+", " ", sem_gatilho).strip()
+        match = re.match(r"^(\d[\d.,]*)\s*(.*)", sem_gatilho)
+        if not match:
+            match = re.search(r"(\d[\d.,]+)\s*(.*)", sem_gatilho)
+        if not match:
+            raise ValueError(
+                "❌ Não entendi o valor do investimento.\n"
+                "Exemplos: investimento 500 tesouro · investi 1000 ações · aporte 200 fundo"
+            )
+        raw_value = match.group(1).replace(",", ".")
+        descricao = match.group(2).strip() or "investimento"
+        try:
+            valor = float(raw_value)
+        except ValueError:
+            raise ValueError("❌ Não entendi o valor. Exemplo: investimento 500 tesouro")
+        if valor <= 0:
+            raise ValueError("❌ O valor precisa ser maior que zero")
+        now = datetime.now()
+        return {
+            "valor": valor,
+            "tipo": tipo,
+            "descricao": descricao,
+            "data": now.strftime("%d/%m/%Y"),
+            "hora": now.strftime("%H:%M"),
+            "categoria": "",
+            "status": "ativo",
+        }
 
     # --- reembolso (verificar antes de entrada/saída) ---
     if _REEMBOLSO_RE.search(lower):
@@ -74,7 +112,8 @@ def parse_message(text: str) -> dict:
             "Saída: 50 mercado\n"
             "Entrada: recebido 300 Gustavo\n"
             "Entrada: entrada 300 salário\n"
-            "Reembolso: reembolso 50 jantar"
+            "Reembolso: reembolso 50 jantar\n"
+            "Investimento: investimento 500 tesouro"
         )
 
     raw_value, descricao = match.group(1), match.group(2).strip()

@@ -28,9 +28,10 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     _last_id[chat_id] = new_id
 
     _TIPO_META = {
-        "entrada":   ("💰", "Entrada registrada"),
-        "saída":     ("💸", "Saída registrada"),
-        "reembolso": ("🔵", "Reembolso registrado"),
+        "entrada":      ("💰", "Entrada registrada"),
+        "saída":        ("💸", "Saída registrada"),
+        "reembolso":    ("🔵", "Reembolso registrado"),
+        "investimento": ("🟣", "Investimento registrado"),
     }
     emoji, label = _TIPO_META.get(transaction["tipo"], ("💸", "Transação registrada"))
     await update.message.reply_text(
@@ -40,6 +41,33 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         f"Data: {transaction['data']} às {transaction['hora']}",
         parse_mode="Markdown",
     )
+
+
+_AJUDA_TEXT = (
+    "📋 *Comandos e mensagens aceitos*\n\n"
+    "💸 *Saída:*\n"
+    "`50 mercado`\n"
+    "`saída 50 almoço`\n\n"
+    "💰 *Entrada:*\n"
+    "`entrada 3000 salário`\n"
+    "`recebido 500 freelance`\n\n"
+    "🔵 *Reembolso:*\n"
+    "`reembolso 80 jantar`\n"
+    "`me devolveram 50 uber`\n"
+    "`recebi de volta 100`\n\n"
+    "🟣 *Investimento:*\n"
+    "`investimento 500 tesouro`\n"
+    "`investi 1000 ações`\n"
+    "`aporte 200 fundo`\n"
+    "`aplicação 300`\n\n"
+    "⚙️ *Comandos:*\n"
+    "/cancelar — cancela o último lançamento\n"
+    "/ajuda — exibe esta mensagem"
+)
+
+
+async def handle_ajuda(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text(_AJUDA_TEXT, parse_mode="Markdown")
 
 
 async def handle_cancel(update: Update, context: ContextTypes.DEFAULT_TYPE):

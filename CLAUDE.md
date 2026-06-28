@@ -31,6 +31,7 @@ Telegram → bot/ → Google Sheets ← api/ ← frontend/
 | 11 — Resumo de Gastos por Grupo (Agrupamento com IA) | ⏳ Pendente (bloqueada pela 10) |
 | 12 — Hospedagem em Nuvem | ✅ Concluída |
 | 13 — Tipo Reembolso | ✅ Concluída |
+| 14 — Tipo Investimento + Comando /ajuda | ✅ Concluída |
 
 ## Como rodar
 

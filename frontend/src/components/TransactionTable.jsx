@@ -33,15 +33,15 @@ export default function TransactionTable({ transactions, onEdit, onDelete }) {
               <td style={tdStyle}>
                 <span style={{
                   display: 'inline-block', padding: '2px 8px', borderRadius: 20, fontSize: 11, fontWeight: 600,
-                  background: t.tipo === 'entrada' ? 'var(--green-dim)' : t.tipo === 'reembolso' ? '#3b82f611' : 'var(--red-dim)',
-                  color: t.tipo === 'entrada' ? 'var(--green)' : t.tipo === 'reembolso' ? '#3b82f6' : 'var(--red)',
+                  background: t.tipo === 'entrada' ? 'var(--green-dim)' : t.tipo === 'reembolso' ? '#3b82f611' : t.tipo === 'investimento' ? '#a855f711' : 'var(--red-dim)',
+                  color: t.tipo === 'entrada' ? 'var(--green)' : t.tipo === 'reembolso' ? '#3b82f6' : t.tipo === 'investimento' ? '#a855f7' : 'var(--red)',
                 }}>
                   {t.tipo}
                 </span>
               </td>
               <td style={tdStyle}>{t.descricao}</td>
               <td style={{ ...tdStyle, color: 'var(--muted)' }}>{t.categoria || '—'}</td>
-              <td style={{ ...tdStyle, fontWeight: 600, color: t.tipo === 'entrada' ? 'var(--green)' : t.tipo === 'reembolso' ? '#3b82f6' : 'var(--red)' }}>
+              <td style={{ ...tdStyle, fontWeight: 600, color: t.tipo === 'entrada' ? 'var(--green)' : t.tipo === 'reembolso' ? '#3b82f6' : t.tipo === 'investimento' ? '#a855f7' : 'var(--red)' }}>
                 {t.tipo === 'entrada' || t.tipo === 'reembolso' ? '+' : '−'}{currency(t.valor)}
               </td>
               <td style={tdStyle}>

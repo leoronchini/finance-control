@@ -103,3 +103,11 @@ Migrar o bot do modo polling para webhook e publicar todos os serviços em plata
 Adicionar `"reembolso"` como terceiro tipo de transação. Um reembolso representa dinheiro que voltou após um gasto adiantado — parcial ou total — e não deve ser confundido com renda real. O bot passa a reconhecer mensagens como *"reembolso 50 jantar"* ou *"me devolveram 80 do almoço"*. O resumo passa a exibir reembolsos separados e o custo efetivo real (`saídas − reembolsos`). Sem mudança de schema no Sheets.
 
 **Detalhamento:** [`fase-13-reembolso.md`](fase-13-reembolso.md)
+
+---
+
+## Fase 14 — Tipo Investimento + Comando /ajuda ✅
+
+Adicionar `"investimento"` como quarto tipo de transação. Dinheiro investido sai do caixa mas não é custo de vida — aparece separado dos gastos. O bot passa a reconhecer mensagens como *"investimento 500 tesouro"*, *"investi 1000 ações"*, *"aporte 200 fundo"*. O resumo exibe um card de "Investimentos" em roxo e o saldo é recalculado descontando investimentos. Inclui também o comando `/ajuda` no bot, que lista todos os formatos de mensagem e comandos disponíveis.
+
+**Detalhamento:** [`done/fase-14-investimento.md`](done/fase-14-investimento.md)
