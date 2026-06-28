@@ -111,3 +111,11 @@ Adicionar `"reembolso"` como terceiro tipo de transação. Um reembolso represen
 Adicionar `"investimento"` como quarto tipo de transação. Dinheiro investido sai do caixa mas não é custo de vida — aparece separado dos gastos. O bot passa a reconhecer mensagens como *"investimento 500 tesouro"*, *"investi 1000 ações"*, *"aporte 200 fundo"*. O resumo exibe um card de "Investimentos" em roxo e o saldo é recalculado descontando investimentos. Inclui também o comando `/ajuda` no bot, que lista todos os formatos de mensagem e comandos disponíveis.
 
 **Detalhamento:** [`done/fase-14-investimento.md`](done/fase-14-investimento.md)
+
+---
+
+## Fase 15 — Migração de Google Sheets para Supabase ✅
+
+Transferir a fonte de verdade das transações do Google Sheets para o banco Supabase já existente. Cria a tabela `transacoes` no PostgreSQL, migra todos os dados históricos com IDs preservados e atualiza todos os módulos que liam/gravavam no Sheets para usar o novo `api/transactions_store.py`. Elimina o delay de 30s do cache e centraliza todos os dados no banco. A planilha é mantida intacta como backup até aprovação do usuário para remoção.
+
+**Detalhamento:** [`done/fase-15-migracao-supabase.md`](done/fase-15-migracao-supabase.md)

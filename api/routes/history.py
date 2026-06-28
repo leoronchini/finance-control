@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 from collections import defaultdict
-from api.sheets import get_active_transactions
+from api.transactions_store import get_active_transactions
 
 router = APIRouter()
 

@@ -1,7 +1,10 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from typing import Optional
-from api.sheets import get_active_transactions, find_row_by_id, _invalidate_cache
+from api.transactions_store import (
+    get_active_transactions, find_by_id, update_transaction as store_update,
+    cancel_transaction as store_cancel,
+)
 
 router = APIRouter()
 
@@ -36,27 +39,17 @@ def list_transactions(
 
 @router.patch("/transactions/{transaction_id}")
 def update_transaction(transaction_id: int, body: TransactionUpdate):
-    sheet, cell = find_row_by_id(transaction_id)
-    if cell is None:
+    if find_by_id(transaction_id) is None:
         raise HTTPException(status_code=404, detail="Transação não encontrada")
 
-    col_map = {"data": 2, "valor": 5, "descricao": 6, "categoria": 7}
-    updates = body.model_dump(exclude_none=True)
-
-    for field, col in col_map.items():
-        if field in updates:
-            sheet.update_cell(cell.row, col, updates[field])
-
-    _invalidate_cache()
+    store_update(transaction_id, body.model_dump(exclude_none=True))
     return {"ok": True, "id": transaction_id}
 
 
 @router.delete("/transactions/{transaction_id}")
 def delete_transaction(transaction_id: int):
-    sheet, cell = find_row_by_id(transaction_id)
-    if cell is None:
+    if find_by_id(transaction_id) is None:
         raise HTTPException(status_code=404, detail="Transação não encontrada")
 
-    sheet.update_cell(cell.row, 8, "cancelado")
-    _invalidate_cache()
+    store_cancel(transaction_id)
     return {"ok": True, "id": transaction_id}

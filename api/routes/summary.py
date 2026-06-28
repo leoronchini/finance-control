@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 from typing import Optional
 from datetime import datetime
-from api.sheets import get_active_transactions
+from api.transactions_store import get_active_transactions
 
 router = APIRouter()
 

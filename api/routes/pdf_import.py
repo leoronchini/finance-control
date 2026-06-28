@@ -5,8 +5,7 @@ import pdfplumber
 from google import genai
 from fastapi import APIRouter, UploadFile, File, HTTPException, Body
 from datetime import datetime
-from bot.sheets import append_transaction
-from api.sheets import _invalidate_cache
+from api.transactions_store import append_transaction
 
 router = APIRouter()
 
@@ -136,5 +135,4 @@ def pdf_confirm(items: list = Body(...)):
         except Exception as e:
             errors.append({"item": item.get("descricao"), "erro": str(e)})
 
-    _invalidate_cache()
     return {"salvos": saved, "erros": errors}

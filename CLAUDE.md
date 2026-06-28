@@ -32,6 +32,7 @@ Telegram → bot/ → Google Sheets ← api/ ← frontend/
 | 12 — Hospedagem em Nuvem | ✅ Concluída |
 | 13 — Tipo Reembolso | ✅ Concluída |
 | 14 — Tipo Investimento + Comando /ajuda | ✅ Concluída |
+| 15 — Migração de Google Sheets para Supabase | ✅ Concluída |
 
 ## Como rodar
 
@@ -56,15 +57,19 @@ cd frontend && npm run dev                                  # frontend
 | `main.py` | `ApplicationBuilder`, registro dos handlers com filtro de auth |
 | `handlers.py` | `handle_message`, `handle_cancel` — lógica de resposta ao Telegram |
 | `parser.py` | `parse_message()` — extrai valor, tipo, descrição do texto livre |
-| `sheets.py` | `append_transaction`, `cancel_transaction`, `get_all_transactions` |
+| `sheets.py` | **backup** — mantido para referência; não usado pelo código de produção |
+| `parser.py` | `parse_message()` — extrai valor, tipo, descrição do texto livre |
 
 ### api/
 
 | Arquivo | Responsabilidade |
 |---|---|
 | `main.py` | FastAPI app, CORS, lifespan, registro de todos os routers |
-| `sheets.py` | `get_active_transactions`, `find_row_by_id` — leitura da planilha |
-| `sheets_write.py` | Re-exporta `append_transaction` do bot para uso interno |
+| `transactions_store.py` | Interface única de acesso ao Supabase: `append_transaction`, `cancel_transaction`, `get_active_transactions`, `find_by_id`, `update_transaction` |
+| `db.py` | Conexão psycopg2 ao Supabase com auto-reconnect |
+| `groups_store.py` | CRUD de grupos e regras de agrupamento (Fase 11) |
+| `sheets.py` | **backup** — mantido para referência; não usado pelo código de produção |
+| `sheets_write.py` | **backup** — mantido para referência; não usado pelo código de produção |
 | `webhook.py` | `init_telegram`, `handle_webhook` — recebe updates do Telegram via POST `/webhook` |
 | `routes/transactions.py` | `GET /transactions`, `PATCH /transactions/{id}`, `DELETE /transactions/{id}` |
 | `routes/summary.py` | `GET /summary` |
