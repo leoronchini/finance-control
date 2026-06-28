@@ -6,7 +6,7 @@ router = APIRouter()
 
 
 @router.get("/summary/items")
-def summary_items(mes: str = Query(None), ano: str = Query(None)):
+def summary_items(mes: str = Query(None), ano: str = Query(None), tipo: str = Query("saída")):
     now = datetime.now()
     mes = mes or now.strftime("%m")
     ano = ano or now.strftime("%Y")
@@ -17,7 +17,7 @@ def summary_items(mes: str = Query(None), ano: str = Query(None)):
         if len(t["data"].split("/")) == 3
         and t["data"].split("/")[1] == mes.zfill(2)
         and t["data"].split("/")[2] == ano
-        and t.get("tipo") == "saída"
+        and t.get("tipo") == tipo
     ]
 
     totals: dict[str, dict] = {}

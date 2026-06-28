@@ -94,8 +94,8 @@ export default function Dashboard() {
                         <div style={{ fontWeight: 500 }}>{t.descricao}</div>
                         <div style={{ fontSize: 11, color: 'var(--muted)' }}>{t.data} · {t.hora}</div>
                       </div>
-                      <div style={{ fontWeight: 600, color: t.tipo === 'entrada' ? 'var(--green)' : 'var(--red)' }}>
-                        {t.tipo === 'entrada' ? '+' : '−'}{currency(t.valor)}
+                      <div style={{ fontWeight: 600, color: t.tipo === 'entrada' ? 'var(--green)' : t.tipo === 'reembolso' ? '#3b82f6' : 'var(--red)' }}>
+                        {t.tipo === 'entrada' || t.tipo === 'reembolso' ? '+' : '−'}{currency(t.valor)}
                       </div>
                     </div>
                   ))

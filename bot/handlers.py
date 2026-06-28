@@ -27,9 +27,14 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     _last_id[chat_id] = new_id
 
-    emoji = "💰" if transaction["tipo"] == "entrada" else "💸"
+    _TIPO_META = {
+        "entrada":   ("💰", "Entrada registrada"),
+        "saída":     ("💸", "Saída registrada"),
+        "reembolso": ("🔵", "Reembolso registrado"),
+    }
+    emoji, label = _TIPO_META.get(transaction["tipo"], ("💸", "Transação registrada"))
     await update.message.reply_text(
-        f"{emoji} *{transaction['tipo'].capitalize()}* registrada!\n"
+        f"{emoji} *{label}*\n"
         f"Valor: R$ {transaction['valor']:.2f}\n"
         f"Descrição: {transaction['descricao']}\n"
         f"Data: {transaction['data']} às {transaction['hora']}",

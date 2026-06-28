@@ -30,6 +30,7 @@ Telegram → bot/ → Google Sheets ← api/ ← frontend/
 | 10 — Persistência com Banco de Dados (Supabase) | ⏳ Pendente |
 | 11 — Resumo de Gastos por Grupo (Agrupamento com IA) | ⏳ Pendente (bloqueada pela 10) |
 | 12 — Hospedagem em Nuvem | ✅ Concluída |
+| 13 — Tipo Reembolso | ✅ Concluída |
 
 ## Como rodar
 

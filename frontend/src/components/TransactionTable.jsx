@@ -33,16 +33,16 @@ export default function TransactionTable({ transactions, onEdit, onDelete }) {
               <td style={tdStyle}>
                 <span style={{
                   display: 'inline-block', padding: '2px 8px', borderRadius: 20, fontSize: 11, fontWeight: 600,
-                  background: t.tipo === 'entrada' ? 'var(--green-dim)' : 'var(--red-dim)',
-                  color: t.tipo === 'entrada' ? 'var(--green)' : 'var(--red)',
+                  background: t.tipo === 'entrada' ? 'var(--green-dim)' : t.tipo === 'reembolso' ? '#3b82f611' : 'var(--red-dim)',
+                  color: t.tipo === 'entrada' ? 'var(--green)' : t.tipo === 'reembolso' ? '#3b82f6' : 'var(--red)',
                 }}>
                   {t.tipo}
                 </span>
               </td>
               <td style={tdStyle}>{t.descricao}</td>
               <td style={{ ...tdStyle, color: 'var(--muted)' }}>{t.categoria || '—'}</td>
-              <td style={{ ...tdStyle, fontWeight: 600, color: t.tipo === 'entrada' ? 'var(--green)' : 'var(--red)' }}>
-                {t.tipo === 'entrada' ? '+' : '−'}{currency(t.valor)}
+              <td style={{ ...tdStyle, fontWeight: 600, color: t.tipo === 'entrada' ? 'var(--green)' : t.tipo === 'reembolso' ? '#3b82f6' : 'var(--red)' }}>
+                {t.tipo === 'entrada' || t.tipo === 'reembolso' ? '+' : '−'}{currency(t.valor)}
               </td>
               <td style={tdStyle}>
                 <div style={{ display: 'flex', gap: 8 }}>

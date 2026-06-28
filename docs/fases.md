@@ -95,3 +95,11 @@ Adicionar ao painel uma camada de resumo que agrupa **todos os lançamentos do m
 Migrar o bot do modo polling para webhook e publicar todos os serviços em plataformas gratuitas de nuvem, garantindo que o bot processe mensagens do Telegram 24h por dia independente do computador do usuário estar ligado. Bot e API FastAPI unificados no Render (free tier); frontend publicado na Vercel. Deploy automatizado via GitHub.
 
 **Detalhamento:** [`done/fase-12-hospedagem-nuvem.md`](done/fase-12-hospedagem-nuvem.md)
+
+---
+
+## Fase 13 — Tipo Reembolso ✅
+
+Adicionar `"reembolso"` como terceiro tipo de transação. Um reembolso representa dinheiro que voltou após um gasto adiantado — parcial ou total — e não deve ser confundido com renda real. O bot passa a reconhecer mensagens como *"reembolso 50 jantar"* ou *"me devolveram 80 do almoço"*. O resumo passa a exibir reembolsos separados e o custo efetivo real (`saídas − reembolsos`). Sem mudança de schema no Sheets.
+
+**Detalhamento:** [`fase-13-reembolso.md`](fase-13-reembolso.md)
