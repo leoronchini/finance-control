@@ -4,15 +4,15 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## O que é este projeto
 
-Bot de controle financeiro pessoal. O usuário envia mensagens pelo Telegram e os dados vão para o Google Sheets. Um painel web (React + FastAPI) permite visualizar, editar e excluir transações.
+Bot de controle financeiro pessoal. O usuário envia mensagens pelo Telegram e os dados são gravados no Supabase (PostgreSQL). Um painel web (React + FastAPI) permite visualizar, editar e excluir transações.
 
 ```
-Telegram → bot/ → Google Sheets ← api/ ← frontend/
+Telegram → bot/ → Supabase ← api/ ← frontend/
 ```
 
-- **bot/** é o único módulo que **escreve** na planilha
-- **api/** é o único módulo que **lê** a planilha e serve o frontend
-- **frontend/** nunca acessa o Google Sheets diretamente
+- **bot/** grava transações via `api/transactions_store.py`
+- **api/** lê e escreve no Supabase e serve o frontend
+- **frontend/** nunca acessa o banco diretamente
 
 ## Estado atual
 
@@ -27,8 +27,8 @@ Telegram → bot/ → Google Sheets ← api/ ← frontend/
 | 7 — Resumo de Gastos por Item | ✅ Concluída |
 | 8 — Análise de Dados com IA | ✅ Concluída |
 | 9 — Importação de Fatura via PDF | ⏳ Pendente |
-| 10 — Persistência com Banco de Dados (Supabase) | ⏳ Pendente |
-| 11 — Resumo de Gastos por Grupo (Agrupamento com IA) | ⏳ Pendente (bloqueada pela 10) |
+| 10 — Persistência com Banco de Dados (Supabase) | ✅ Concluída |
+| 11 — Resumo de Gastos por Grupo (Agrupamento com IA) | ⏳ Pendente |
 | 12 — Hospedagem em Nuvem | ✅ Concluída |
 | 13 — Tipo Reembolso | ✅ Concluída |
 | 14 — Tipo Investimento + Comando /ajuda | ✅ Concluída |
@@ -55,9 +55,7 @@ cd frontend && npm run dev                                  # frontend
 | Arquivo | Responsabilidade |
 |---|---|
 | `main.py` | `ApplicationBuilder`, registro dos handlers com filtro de auth |
-| `handlers.py` | `handle_message`, `handle_cancel` — lógica de resposta ao Telegram |
-| `parser.py` | `parse_message()` — extrai valor, tipo, descrição do texto livre |
-| `sheets.py` | **backup** — mantido para referência; não usado pelo código de produção |
+| `handlers.py` | `handle_message`, `handle_cancel`, `handle_ajuda` — lógica de resposta ao Telegram |
 | `parser.py` | `parse_message()` — extrai valor, tipo, descrição do texto livre |
 
 ### api/
@@ -68,8 +66,6 @@ cd frontend && npm run dev                                  # frontend
 | `transactions_store.py` | Interface única de acesso ao Supabase: `append_transaction`, `cancel_transaction`, `get_active_transactions`, `find_by_id`, `update_transaction` |
 | `db.py` | Conexão psycopg2 ao Supabase com auto-reconnect |
 | `groups_store.py` | CRUD de grupos e regras de agrupamento (Fase 11) |
-| `sheets.py` | **backup** — mantido para referência; não usado pelo código de produção |
-| `sheets_write.py` | **backup** — mantido para referência; não usado pelo código de produção |
 | `webhook.py` | `init_telegram`, `handle_webhook` — recebe updates do Telegram via POST `/webhook` |
 | `routes/transactions.py` | `GET /transactions`, `PATCH /transactions/{id}`, `DELETE /transactions/{id}` |
 | `routes/summary.py` | `GET /summary` |
@@ -89,26 +85,26 @@ Em produção, **somente a API sobe** — o bot roda embutido nela via webhook.
 
 ### scripts/
 
-`scripts/setup_resumo_por_item.py` — cria/recria a aba `resumo_por_item` no Google Sheets com fórmulas QUERY. Rodar manualmente quando necessário.
+- `scripts/migrate_db.py` — cria as tabelas `grupos` e `regras_grupo` no Supabase e insere grupos padrão.
+- `scripts/migrate_sheets_to_db.py` — migração one-shot do Google Sheets para Supabase (já executado).
 
 ## Variáveis de ambiente
 
 ```
 TELEGRAM_BOT_TOKEN      token do @BotFather
 TELEGRAM_CHAT_ID        id do chat do dono do bot
-GOOGLE_SHEETS_ID        id da planilha (da URL do Sheets)
-GOOGLE_CREDENTIALS_PATH ./credentials/google-credentials.json
 API_PORT                8000
 GEMINI_API_KEY          chave da API do Google Gemini
+DATABASE_URL            postgresql://postgres:<senha>@<host>.supabase.co:5432/postgres
 ```
 
 ## Convenções críticas
 
 - **Datas** no formato `DD/MM/AAAA` — sempre string. Filtro por mês: `split("/")[1]`, por ano: `split("/")[2]`
-- **Tipos**: exatamente `"entrada"` ou `"saída"` (com acento no ã)
+- **Tipos**: `"entrada"`, `"saída"` (com acento), `"reembolso"`, `"investimento"`
 - **Status**: exatamente `"ativo"` ou `"cancelado"`
-- **Nunca deletar linhas** da planilha — apenas mudar `status` para `"cancelado"`
-- **IDs** são sequenciais inteiros, nunca reutilizados
+- **Nunca deletar linhas** do banco — apenas mudar `status` para `"cancelado"`
+- **IDs** são sequenciais inteiros (SERIAL PostgreSQL), nunca reutilizados
 
 ## Imports e paths
 
@@ -119,7 +115,7 @@ _ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 load_dotenv(os.path.join(_ROOT, ".env"))
 ```
 
-Imports dentro de `api/routes/` usam prefixo completo: `from api.sheets import ...` (não `from sheets import ...`), pois a API é iniciada da raiz com `python -m uvicorn api.main:app`.
+Imports dentro de `api/routes/` usam prefixo completo: `from api.transactions_store import ...` (não `from transactions_store import ...`), pois a API é iniciada da raiz com `python -m uvicorn api.main:app`.
 
 ## Autenticação do bot
 

@@ -9,11 +9,9 @@ services:
         sync: false
       - key: TELEGRAM_CHAT_ID
         sync: false
-      - key: GOOGLE_SHEETS_ID
-        sync: false
-      - key: GOOGLE_CREDENTIALS_JSON
-        sync: false
       - key: GEMINI_API_KEY
+        sync: false
+      - key: DATABASE_URL
         sync: false
       - key: FRONTEND_URL
         sync: false
