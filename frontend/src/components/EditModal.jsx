@@ -6,6 +6,7 @@ export default function EditModal({ transaction, onSave, onClose }) {
     descricao: transaction.descricao,
     categoria: transaction.categoria || '',
     data: transaction.data,
+    tipo: transaction.tipo,
   })
 
   const set = (field) => (e) => setForm((f) => ({ ...f, [field]: e.target.value }))
@@ -31,6 +32,28 @@ export default function EditModal({ transaction, onSave, onClose }) {
         flexDirection: 'column', gap: 16,
       }}>
         <h3 style={{ fontSize: 16, fontWeight: 700 }}>Editar Transação</h3>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+          <label style={{ fontSize: 12, color: 'var(--muted)' }}>Tipo</label>
+          <div style={{ display: 'flex', gap: 6 }}>
+            {[['entrada','💰 Entrada'],['saída','💸 Saída'],['reembolso','🔵 Reembolso'],['investimento','🟣 Investimento']].map(([v, l]) => {
+              const colors = { entrada: 'var(--green)', 'saída': 'var(--red)', reembolso: '#3b82f6', investimento: '#a855f7' }
+              const active = form.tipo === v
+              return (
+                <button
+                  key={v}
+                  onClick={() => setForm(f => ({ ...f, tipo: v }))}
+                  style={{
+                    flex: 1, padding: '7px 4px', borderRadius: 8, fontSize: 11, fontWeight: 600, cursor: 'pointer',
+                    border: `1px solid ${active ? colors[v] : 'var(--border)'}`,
+                    background: active ? `${colors[v]}18` : 'var(--bg3)',
+                    color: active ? colors[v] : 'var(--muted)',
+                  }}
+                >{l}</button>
+              )
+            })}
+          </div>
+        </div>
 
         {fields.map(({ label, field, type, step, placeholder }) => (
           <div key={field} style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>

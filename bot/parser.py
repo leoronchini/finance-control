@@ -1,5 +1,8 @@
 import re
 from datetime import datetime
+from zoneinfo import ZoneInfo
+
+_TZ = ZoneInfo("America/Sao_Paulo")
 
 _REEMBOLSO_RE = re.compile(
     r"reembolso|recebi de volta|me pagaram|me devolveram|ressarcimento",
@@ -40,7 +43,7 @@ def parse_message(text: str) -> dict:
             raise ValueError("❌ Não entendi o valor. Exemplo: investimento 500 tesouro")
         if valor <= 0:
             raise ValueError("❌ O valor precisa ser maior que zero")
-        now = datetime.now()
+        now = datetime.now(_TZ)
         return {
             "valor": valor,
             "tipo": tipo,
@@ -76,7 +79,7 @@ def parse_message(text: str) -> dict:
             raise ValueError("❌ Não entendi o valor. Exemplo: reembolso 50 jantar")
         if valor <= 0:
             raise ValueError("❌ O valor precisa ser maior que zero")
-        now = datetime.now()
+        now = datetime.now(_TZ)
         return {
             "valor": valor,
             "tipo": tipo,
@@ -130,7 +133,7 @@ def parse_message(text: str) -> dict:
     if not descricao:
         raise ValueError("❌ Adicione uma descrição. Exemplo: 50 mercado")
 
-    now = datetime.now()
+    now = datetime.now(_TZ)
     return {
         "valor": valor,
         "tipo": tipo,

@@ -43,6 +43,13 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
 
 
+_COMANDOS_TEXT = (
+    "⚙️ *Comandos disponíveis*\n\n"
+    "/cancelar — cancela o último lançamento\n"
+    "/ajuda — exemplos de como registrar transações\n"
+    "/comandos — exibe esta lista de comandos"
+)
+
 _AJUDA_TEXT = (
     "📋 *Comandos e mensagens aceitos*\n\n"
     "💸 *Saída:*\n"
@@ -62,12 +69,17 @@ _AJUDA_TEXT = (
     "`aplicação 300`\n\n"
     "⚙️ *Comandos:*\n"
     "/cancelar — cancela o último lançamento\n"
-    "/ajuda — exibe esta mensagem"
+    "/ajuda — exibe esta mensagem\n"
+    "/comandos — lista todos os comandos"
 )
 
 
 async def handle_ajuda(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(_AJUDA_TEXT, parse_mode="Markdown")
+
+
+async def handle_comandos(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text(_COMANDOS_TEXT, parse_mode="Markdown")
 
 
 async def handle_cancel(update: Update, context: ContextTypes.DEFAULT_TYPE):

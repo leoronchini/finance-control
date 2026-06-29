@@ -1,30 +1,91 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { currency } from '../utils/format'
+
+const TIPO_ORDER = { entrada: 0, reembolso: 1, investimento: 2, 'saída': 3 }
+
+function parseDate(data, hora) {
+  const [d, m, y] = data.split('/')
+  return `${y}${m}${d}${(hora || '').replace(':', '')}`
+}
+
+function sortRows(rows, key, dir) {
+  return [...rows].sort((a, b) => {
+    let va, vb
+    if (key === 'data') {
+      va = parseDate(a.data, a.hora)
+      vb = parseDate(b.data, b.hora)
+    } else if (key === 'valor') {
+      va = Number(a.valor)
+      vb = Number(b.valor)
+    } else if (key === 'categoria') {
+      va = (a.categoria || '').toLowerCase()
+      vb = (b.categoria || '').toLowerCase()
+    }
+    if (va < vb) return dir === 'asc' ? -1 : 1
+    if (va > vb) return dir === 'asc' ? 1 : -1
+    return 0
+  })
+}
 
 export default function TransactionTable({ transactions, onEdit, onDelete }) {
   const [confirmId, setConfirmId] = useState(null)
+  const [sortKey, setSortKey] = useState('data')
+  const [sortDir, setSortDir] = useState('desc')
+
+  const sorted = useMemo(() => sortRows(transactions, sortKey, sortDir), [transactions, sortKey, sortDir])
+
+  function handleSort(key) {
+    if (sortKey === key) {
+      setSortDir(d => d === 'asc' ? 'desc' : 'asc')
+    } else {
+      setSortKey(key)
+      setSortDir(key === 'data' ? 'desc' : 'asc')
+    }
+  }
 
   if (!transactions?.length) {
     return <p style={{ color: 'var(--muted)', padding: 20 }}>Nenhuma transação encontrada.</p>
   }
+
+  const sortable = { data: 'Data', valor: 'Valor', categoria: 'Categoria' }
 
   return (
     <div style={{ overflowX: 'auto' }}>
       <table style={{ width: '100%', borderCollapse: 'collapse' }}>
         <thead>
           <tr style={{ borderBottom: '1px solid var(--border)' }}>
-            {['Data','Hora','Tipo','Descrição','Categoria','Valor','Ações'].map(h => (
-              <th key={h} style={{
-                color: 'var(--muted)', fontSize: 11, textTransform: 'uppercase',
-                letterSpacing: '.5px', padding: '8px 12px', textAlign: 'left', fontWeight: 600,
-              }}>{h}</th>
-            ))}
+            {['Data', 'Hora', 'Tipo', 'Descrição', 'Categoria', 'Valor', 'Ações'].map(h => {
+              const key = Object.entries(sortable).find(([, label]) => label === h)?.[0]
+              const active = key && sortKey === key
+              return (
+                <th
+                  key={h}
+                  onClick={key ? () => handleSort(key) : undefined}
+                  style={{
+                    color: active ? 'var(--text)' : 'var(--muted)',
+                    fontSize: 11, textTransform: 'uppercase', letterSpacing: '.5px',
+                    padding: '8px 12px', textAlign: 'left', fontWeight: 600,
+                    cursor: key ? 'pointer' : 'default',
+                    userSelect: 'none',
+                    whiteSpace: 'nowrap',
+                  }}
+                >
+                  {h}
+                  {key && (
+                    <span style={{ marginLeft: 4, opacity: active ? 1 : .3, fontSize: 10 }}>
+                      {active ? (sortDir === 'asc' ? '▲' : '▼') : '⇅'}
+                    </span>
+                  )}
+                </th>
+              )
+            })}
           </tr>
         </thead>
         <tbody>
-          {transactions.map((t, i) => (
-            <tr key={t.id}
-              style={{ borderBottom: i < transactions.length - 1 ? '1px solid var(--border)' : 'none' }}
+          {sorted.map((t, i) => (
+            <tr
+              key={t.id}
+              style={{ borderBottom: i < sorted.length - 1 ? '1px solid var(--border)' : 'none' }}
               onMouseEnter={e => e.currentTarget.style.background = 'var(--bg3)'}
               onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
             >

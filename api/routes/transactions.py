@@ -14,6 +14,7 @@ class TransactionUpdate(BaseModel):
     descricao: Optional[str] = None
     categoria: Optional[str] = None
     data: Optional[str] = None
+    tipo: Optional[str] = None
 
 
 @router.get("/transactions")

@@ -17,7 +17,7 @@ async def init_telegram():
         return
 
     chat_id = int(os.getenv("TELEGRAM_CHAT_ID"))
-    from bot.handlers import handle_message, handle_cancel, handle_ajuda
+    from bot.handlers import handle_message, handle_cancel, handle_ajuda, handle_comandos
 
     cancel_keywords = filters.Regex(r"^(cancelar|desfazer)$")
     auth = filters.ChatType.PRIVATE & filters.User(user_id=chat_id)
@@ -25,8 +25,9 @@ async def init_telegram():
     # updater(None) é obrigatório em modo webhook — sem ele o PTB tenta criar
     # um Updater para polling, o que é desnecessário e quebra no Python 3.14
     app = ApplicationBuilder().token(token).updater(None).build()
-    app.add_handler(CommandHandler("ajuda", handle_ajuda))
-    app.add_handler(CommandHandler("help",  handle_ajuda))
+    app.add_handler(CommandHandler("ajuda",    handle_ajuda))
+    app.add_handler(CommandHandler("help",     handle_ajuda))
+    app.add_handler(CommandHandler("comandos", handle_comandos))
     app.add_handler(MessageHandler(auth & cancel_keywords, handle_cancel))
     app.add_handler(MessageHandler(auth & filters.TEXT & ~filters.COMMAND, handle_message))
 

@@ -25,9 +25,6 @@ export default function Transactions() {
   const [filter, setFilter] = useState('all')
   const [search, setSearch] = useState('')
   const [editing, setEditing] = useState(null)
-  const [rev, setRev] = useState(0)
-
-  const reload = () => setRev(r => r + 1)
 
   useEffect(() => {
     setLoading(true)
@@ -35,7 +32,7 @@ export default function Transactions() {
       .then(setTransactions)
       .catch(console.error)
       .finally(() => setLoading(false))
-  }, [mes, ano, rev])
+  }, [mes, ano])
 
   const filtered = useMemo(() =>
     transactions
@@ -47,10 +44,10 @@ export default function Transactions() {
   const handleSave = async (id, data) => {
     try {
       await updateTransaction(id, data)
+      setTransactions(prev => prev.map(t => t.id === id ? { ...t, ...data } : t))
       setEditing(null)
-      reload()
       showToast('Edição salva com sucesso.')
-    } catch (e) {
+    } catch {
       showToast('Erro ao salvar. Verifique a API.')
     }
   }
@@ -58,11 +55,19 @@ export default function Transactions() {
   const handleDelete = async (id) => {
     try {
       await deleteTransaction(id)
-      reload()
+      setTransactions(prev => prev.filter(t => t.id !== id))
       showToast('Transação excluída.')
-    } catch (e) {
+    } catch {
       showToast('Erro ao excluir. Verifique a API.')
     }
+  }
+
+  const handleRefresh = () => {
+    setLoading(true)
+    getTransactions(mes, ano)
+      .then(setTransactions)
+      .catch(console.error)
+      .finally(() => setLoading(false))
   }
 
   return (
@@ -105,7 +110,7 @@ export default function Transactions() {
         />
       )}
 
-      <PageFooter onRefresh={reload} />
+      <PageFooter onRefresh={handleRefresh} />
     </div>
   )
 }
