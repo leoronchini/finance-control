@@ -1,11 +1,16 @@
 import { useState } from 'react'
 
 export default function EditModal({ transaction, onSave, onClose }) {
+  // Converte DD/MM/AAAA → AAAA-MM-DD para o input type="date"
+  const toInputDate = (d) => { const [dd, mm, yyyy] = d.split('/'); return `${yyyy}-${mm}-${dd}` }
+  // Converte AAAA-MM-DD → DD/MM/AAAA para salvar no padrão interno
+  const fromInputDate = (d) => { const [yyyy, mm, dd] = d.split('-'); return `${dd}/${mm}/${yyyy}` }
+
   const [form, setForm] = useState({
     valor: transaction.valor,
     descricao: transaction.descricao,
     categoria: transaction.categoria || '',
-    data: transaction.data,
+    data: toInputDate(transaction.data),
     tipo: transaction.tipo,
   })
 
@@ -15,7 +20,7 @@ export default function EditModal({ transaction, onSave, onClose }) {
     { label: 'Valor', field: 'valor', type: 'number', step: '0.01' },
     { label: 'Descrição', field: 'descricao', type: 'text' },
     { label: 'Categoria', field: 'categoria', type: 'text', placeholder: '(opcional)' },
-    { label: 'Data (DD/MM/AAAA)', field: 'data', type: 'text' },
+    { label: 'Data', field: 'data', type: 'date' },
   ]
 
   return (
@@ -85,7 +90,7 @@ export default function EditModal({ transaction, onSave, onClose }) {
             Cancelar
           </button>
           <button
-            onClick={() => onSave(transaction.id, { ...form, valor: parseFloat(form.valor) })}
+            onClick={() => onSave(transaction.id, { ...form, valor: parseFloat(form.valor), data: fromInputDate(form.data) })}
             style={{
               background: 'var(--blue)', color: '#fff', border: 'none',
               padding: '9px 20px', borderRadius: 8, fontWeight: 600, cursor: 'pointer',
